@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useState, useContext, useMemo } from 'react';
+import React, { createContext, useState, useContext, useMemo, useEffect } from 'react';
 
 type Language = 'en' | 'hi' | 'ta';
 
@@ -171,19 +171,27 @@ type LanguageContextType = {
   language: Language;
   setLanguage: (language: Language) => void;
   t: (key: keyof typeof translations.en) => string;
+  isMounted: boolean;
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
   const [language, setLanguage] = useState<Language>('en');
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const t = useMemo(() => (key: keyof typeof translations.en) => {
     return translations[language][key] || translations.en[key];
   }, [language]);
 
+  const value = { language, setLanguage, t, isMounted };
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );
