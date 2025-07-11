@@ -57,7 +57,10 @@ const fetchMarketDataTool = ai.defineTool(
 const marketAnalysisPrompt = ai.definePrompt({
   name: 'marketAnalysisPrompt',
   tools: [fetchMarketDataTool],
-  input: { schema: MarketAnalysisInputSchema },
+  input: { schema: z.object({
+      ...MarketAnalysisInputSchema.shape,
+      historicalPriceData: z.any(),
+  }) },
   output: { schema: z.object({
       recommendation: z.enum(['Sell Now', 'Wait']),
       translatedRecommendation: z.string(),
@@ -67,9 +70,7 @@ const marketAnalysisPrompt = ai.definePrompt({
   }) },
   prompt: `You are an expert agricultural market analyst. Your goal is to advise a farmer on the best time to sell their harvested crops.
 
-  First, use the 'fetchMarketPriceData' tool to get the price history for the specified crop.
-
-  Then, analyze the provided data:
+  Analyze the provided data:
   1.  **Price Trend**: Analyze the historical price data to identify a trend (upward, downward, or stable).
   2.  **Crop Urgency**: Assess the urgency to sell based on the crop's condition and harvest time. A 'poor' condition or older harvest requires a faster sale, even if the market trend is unfavorable. A 'perfect' condition crop can afford to wait for a better price.
   3.  **Prediction**: Based on the trend, predict the prices for 'Today' and 'Tomorrow'.
@@ -84,6 +85,9 @@ const marketAnalysisPrompt = ai.definePrompt({
   - Name: {{cropName}}
   - Harvested: {{harvestTime}}
   - Condition: {{cropCondition}}
+  
+  Historical Price Data:
+  {{jsonStringify historicalPriceData}}
   `,
 });
 
@@ -95,23 +99,22 @@ export const marketAnalysis = ai.defineFlow(
     outputSchema: MarketAnalysisOutputSchema,
   },
   async (input) => {
-    // Call the prompt, which will use the tool to fetch data
-    const llmResponse = await marketAnalysisPrompt(input);
+    // Manually call the tool to get historical data
+    const historicalPriceData = await fetchMarketDataTool({ crop: input.cropName });
+
+    // Call the prompt with the historical data in the input
+    const llmResponse = await marketAnalysisPrompt({
+      ...input,
+      historicalPriceData: historicalPriceData.slice(0, historicalPriceData.length -1) // Exclude today's mock price
+    });
     const analysis = llmResponse.output!;
-
-    // Get the full data from the tool's execution history
-    const history = llmResponse.history();
-    const toolCall = history.find(m => m.role === 'tool' && m.content[0].toolRequest.name === 'fetchMarketPriceData');
     
-    // @ts-ignore
-    const marketData: PriceData[] = toolCall?.content[0]?.toolResponse?.part?.output || [];
-
     // Combine historical data with AI predictions
-    const combinedPriceData = marketData.slice(0, marketData.length -1); // Historical data without today
+    const combinedPriceData: PriceData[] = historicalPriceData.slice(0, historicalPriceData.length - 1);
     combinedPriceData.push({ day: 'Today', price: analysis.predictedPriceToday });
     combinedPriceData.push({ day: 'Tomorrow', price: analysis.predictedPriceTomorrow });
     
-    // Map internal values to user-friendly text (this can be improved with i18n)
+    // Map internal values to user-friendly text
     const harvestTimeText = {
         'just_now': 'Just now harvested',
         '2_days_ago': 'Harvested 2 days ago',
