@@ -44,10 +44,9 @@ export default function SettingsPage() {
                 <Label htmlFor="push-notifications" className="font-medium">{t('pushNotifications')}</Label>
                 <Switch id="push-notifications" />
             </div>
-            <div className="flex items-center justify-between rounded-lg border border-amber-500/50 bg-amber-500/10 p-4">
+            <div className="flex items-center justify-between">
                 <div className="space-y-1">
                     <Label htmlFor="early-warning" className="font-medium flex items-center gap-2">
-                        <AlertTriangle className="text-amber-500"/>
                         {t('earlyWarningSystem')}
                     </Label>
                     <p className="text-xs text-muted-foreground">{t('earlyWarningSystemDescription')}</p>
