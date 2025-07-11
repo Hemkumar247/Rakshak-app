@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -62,7 +63,7 @@ export default function CropSuggestionsPage() {
     }
   }
 
-  function handleGetLocation() {
+  async function handleGetLocation() {
     if (!navigator.geolocation) {
       toast({
         variant: "destructive",
@@ -74,15 +75,29 @@ export default function CropSuggestionsPage() {
 
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         const { latitude, longitude } = position.coords;
-        const locationString = `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)}`;
-        form.setValue('farmLocation', locationString, { shouldValidate: true });
-        setIsLocating(false);
-        toast({
+        try {
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
+          const data = await response.json();
+          const locationString = data.display_name || `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)}`;
+          form.setValue('farmLocation', locationString, { shouldValidate: true });
+          toast({
             title: "Location Found",
             description: "Your location has been filled in.",
-        })
+          });
+        } catch (e) {
+            console.error("Reverse geocoding failed", e);
+            const locationString = `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)}`;
+            form.setValue('farmLocation', locationString, { shouldValidate: true });
+            toast({
+                variant: "destructive",
+                title: "Could not fetch address",
+                description: "Using coordinates instead.",
+            });
+        } finally {
+            setIsLocating(false);
+        }
       },
       (error) => {
         setIsLocating(false);
