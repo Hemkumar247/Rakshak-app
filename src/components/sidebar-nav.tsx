@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BrainCircuit, LayoutDashboard, Sprout, BarChart3 } from 'lucide-react';
+import { HeartPulse, LayoutDashboard, Sprout, BarChart3 } from 'lucide-react';
 
 import {
   Sidebar,
@@ -33,8 +33,8 @@ export function SidebarNav() {
     },
     {
       href: '/agronomic-tips',
-      label: t('agronomicTips'),
-      icon: BrainCircuit,
+      label: t('plantDiagnosis'),
+      icon: HeartPulse,
     },
     {
       href: '/data-visualization',

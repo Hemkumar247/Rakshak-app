@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Lightbulb, Loader2 } from 'lucide-react';
+import { Upload, Loader2, Leaf, HeartPulse, ShieldCheck, Bug, Pill, Spray, AlertCircle, Sparkles } from 'lucide-react';
+import Image from 'next/image';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,63 +16,147 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getAIAgronomicTips } from './actions';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { getPlantDiagnosis } from './actions';
 import { useLanguage } from '@/lib/i18n';
+import type { DiagnosePlantDiseaseOutput } from '@/ai/flows/diagnose-plant-disease';
+import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const formSchema = z.object({
-  cropType: z.string().min(2, "Crop type is required."),
-  farmConditions: z.string().min(10, "Farm conditions are required."),
+  userDescription: z.string().optional(),
+  photo: z.instanceof(File).refine(file => file.size > 0, "A photo of the plant is required."),
 });
 
-export default function AgronomicTipsPage() {
-  const { t, language } = useLanguage();
-  const [tips, setTips] = useState<string[] | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+type FormValues = z.infer<typeof formSchema>;
 
-  const form = useForm<z.infer<typeof formSchema>>({
+export default function PlantDiagnosisPage() {
+  const { t, language } = useLanguage();
+  const { toast } = useToast();
+  const [diagnosis, setDiagnosis] = useState<DiagnosePlantDiseaseOutput | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      cropType: "",
-      farmConditions: "",
+      userDescription: "",
+      photo: new File([], ""),
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      form.setValue('photo', file, { shouldValidate: true });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  const toDataUri = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+    });
+  };
+
+  async function onSubmit(values: FormValues) {
     setIsLoading(true);
-    setTips(null);
+    setDiagnosis(null);
     try {
-      const result = await getAIAgronomicTips({ ...values, language });
-      setTips(result.tips);
+        const photoDataUri = await toDataUri(values.photo);
+        const result = await getPlantDiagnosis({ 
+            photoDataUri, 
+            userDescription: values.userDescription || "", 
+            language 
+        });
+        setDiagnosis(result);
     } catch (error) {
-      console.error("Failed to get agronomic tips:", error);
+        console.error("Failed to get plant diagnosis:", error);
+        toast({
+            variant: "destructive",
+            title: t('errorTitle'),
+            description: t('errorDescription'),
+        });
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
   }
+
+  const renderResultSection = (title: string, items: string[], Icon: React.ElementType, color: string) => (
+    <div>
+        <h3 className={`text-xl font-headline font-bold mb-3 flex items-center gap-2 ${color}`}>
+            <Icon className="h-6 w-6" /> {title}
+        </h3>
+        {items && items.length > 0 ? (
+            <ul className="space-y-2 list-inside pl-2 text-foreground/90">
+                {items.map((item, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                        <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                        <span className="flex-1">{item}</span>
+                    </li>
+                ))}
+            </ul>
+        ) : <p className="text-muted-foreground">{t('noInfo')}</p>}
+    </div>
+);
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-headline font-bold tracking-tight">{t('agronomicTipsTitle')}</h1>
-        <p className="text-muted-foreground">{t('agronomicTipsDescription')}</p>
+        <h1 className="text-3xl font-headline font-bold tracking-tight">{t('plantDiagnosisTitle')}</h1>
+        <p className="text-muted-foreground">{t('plantDiagnosisDescription')}</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         <Card className="shadow-lg border-white/40">
-          <CardContent className="pt-6">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 font-headline">
+                    <Sparkles /> {t('newDiagnosis')}
+                </CardTitle>
+            </CardHeader>
+          <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
                   control={form.control}
-                  name="cropType"
+                  name="photo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('cropType')}</FormLabel>
+                      <FormLabel>{t('plantPhoto')}</FormLabel>
                       <FormControl>
-                        <Input placeholder={t('cropTypePlaceholder')} {...field} />
+                        <div
+                          className="relative border-2 border-dashed border-muted-foreground/30 rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                          />
+                           {preview ? (
+                            <div className="relative w-full h-48 rounded-md overflow-hidden">
+                                <Image src={preview} alt="Plant preview" layout="fill" objectFit="contain" />
+                            </div>
+                           ) : (
+                            <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                                <Upload className="h-10 w-10" />
+                                <p>{t('uploadInstruction')}</p>
+                                <p className="text-xs">{t('uploadSubtext')}</p>
+                            </div>
+                           )}
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -79,20 +164,20 @@ export default function AgronomicTipsPage() {
                 />
                 <FormField
                   control={form.control}
-                  name="farmConditions"
+                  name="userDescription"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('farmConditions')}</FormLabel>
+                      <FormLabel>{t('optionalNotes')}</FormLabel>
                       <FormControl>
-                        <Textarea rows={6} placeholder={t('farmConditionsPlaceholder')} {...field} />
+                        <Textarea rows={4} placeholder={t('optionalNotesPlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="submit" disabled={isLoading} className="w-full">
+                <Button type="submit" disabled={isLoading || !form.formState.isValid} className="w-full">
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {isLoading ? t('loading') : t('getTips')}
+                  {isLoading ? t('loading') : t('getDiagnosis')}
                 </Button>
               </form>
             </Form>
@@ -103,26 +188,57 @@ export default function AgronomicTipsPage() {
           <Card className="shadow-lg border-white/40 min-h-[400px]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 font-headline">
-                <Lightbulb /> {t('tips')}
+                <HeartPulse /> {t('diagnosisResult')}
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
               {isLoading && (
-                <div className="flex items-center justify-center h-64">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <div className="flex flex-col items-center justify-center h-64">
+                  <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+                  <p className="text-lg text-muted-foreground">{t('aiAnalyzing')}</p>
                 </div>
               )}
-              {tips && (
-                <ul className="space-y-3 list-decimal pl-5 text-foreground/90">
-                  {tips.map((tip, index) => (
-                    <li key={index} className="leading-relaxed">{tip}</li>
-                  ))}
-                </ul>
+              {diagnosis && (
+                <div>
+                  { !diagnosis.isPlant ? (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertTitle>{t('notAPlantTitle')}</AlertTitle>
+                      <AlertDescription>{t('notAPlantDescription')}</AlertDescription>
+                    </Alert>
+                  ) : (
+                    <div className="space-y-6">
+                        <Card className="bg-card/50">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-bold font-headline text-primary">{diagnosis.plantName}</CardTitle>
+                                <CardDescription className="flex items-center gap-2">
+                                {diagnosis.isHealthy ? (
+                                    <>
+                                        <ShieldCheck className="text-green-500"/>
+                                        <span className="font-semibold text-green-500">{t('healthy')}</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Bug className="text-destructive"/>
+                                        <span className="font-semibold text-destructive">{diagnosis.diseaseName}</span>
+                                    </>
+                                )}
+                                </CardDescription>
+                            </CardHeader>
+                        </Card>
+                       
+                        {renderResultSection(t('diagnosis'), diagnosis.diagnosis, Bug, "text-destructive")}
+                        {renderResultSection(t('treatment'), diagnosis.treatment, Pill, "text-green-600")}
+                        {renderResultSection(t('prevention'), diagnosis.prevention, ShieldCheck, "text-blue-600")}
+                    </div>
+                  )}
+                </div>
               )}
-              {!isLoading && !tips && (
+              {!isLoading && !diagnosis && (
                 <div className="flex flex-col items-center justify-center h-64 text-center">
-                  <Lightbulb className="h-12 w-12 text-muted-foreground/50 mb-4" />
-                  <p className="text-muted-foreground">Your agronomic tips will appear here.</p>
+                  <Leaf className="h-16 w-16 text-muted-foreground/50 mb-4" />
+                  <p className="text-muted-foreground text-lg">{t('resultsAppearHere')}</p>
+                  <p className="text-muted-foreground/80">{t('uploadToStart')}</p>
                 </div>
               )}
             </CardContent>
