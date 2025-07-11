@@ -6,13 +6,13 @@ import { usePathname } from 'next/navigation';
 import { HeartPulse, LayoutDashboard, Sprout, BarChart3, ScrollText, Sun, User } from 'lucide-react';
 
 import {
-  Sidebar,
   SidebarHeader,
   SidebarContent,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarSeparator,
+  SidebarFooter,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import { useLanguage } from '@/lib/i18n';
@@ -52,11 +52,6 @@ export function SidebarNav() {
       label: t('governmentSchemes'),
       icon: ScrollText,
     },
-    {
-      href: '/profile',
-      label: t('profile'),
-      icon: User,
-    }
   ];
 
   return (
@@ -83,6 +78,19 @@ export function SidebarNav() {
           ))}
         </SidebarMenu>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarSeparator />
+        <SidebarMenu>
+            <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/profile')} tooltip={t('profile')}>
+                    <Link href="/profile">
+                        <User />
+                        <span>{t('profile')}</span>
+                    </Link>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </>
   );
 }
