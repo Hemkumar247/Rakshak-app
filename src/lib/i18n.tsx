@@ -56,7 +56,7 @@ const translations = {
     recommendations: 'Our Recommendations',
     
     // Plant Diagnosis
-    plantDiagnosisTitle: 'Rakshak AI: Plant Disease Diagnosis',
+    plantDiagnosisTitle: 'Rakshak AI',
     plantDiagnosisDescription: 'Upload a photo of your plant to get an AI-powered diagnosis and treatment plan.',
     newDiagnosis: 'New Diagnosis',
     plantPhoto: 'Plant Photo',
@@ -120,7 +120,7 @@ const translations = {
     humidity: 'Humidity',
     windSpeed: 'Wind Speed',
     visibility: 'Visibility',
-    sevenDayForecast: '7-Day Farming Forecast',
+    sevenDayForecast: 'Farming Forecast',
     rainChance: 'Rain Chance',
 
     // Profile Page
@@ -195,7 +195,7 @@ const translations = {
     recommendations: 'हमारी सिफारिशें',
 
     // Plant Diagnosis
-    plantDiagnosisTitle: 'रक्षक AI: पौधों के रोगों का निदान',
+    plantDiagnosisTitle: 'रक्षक AI',
     plantDiagnosisDescription: 'AI-संचालित निदान और उपचार योजना प्राप्त करने के लिए अपने पौधे की एक तस्वीर अपलोड करें।',
     newDiagnosis: 'नया निदान',
     plantPhoto: 'पौधे की तस्वीर',
@@ -259,7 +259,7 @@ const translations = {
     humidity: 'आर्द्रता',
     windSpeed: 'हवा की गति',
     visibility: 'दृश्यता',
-    sevenDayForecast: '7-दिवसीय कृषि पूर्वानुमान',
+    sevenDayForecast: 'कृषि पूर्वानुमान',
     rainChance: 'बारिश की संभावना',
 
     // Profile Page
@@ -334,7 +334,7 @@ const translations = {
     recommendations: 'எங்கள் பரிந்துரைகள்',
 
     // Plant Diagnosis
-    plantDiagnosisTitle: 'ரக்ஷக் AI: தாவர நோய் கண்டறிதல்',
+    plantDiagnosisTitle: 'ரக்ஷக் AI',
     plantDiagnosisDescription: 'AI-இயங்கும் நோய் கண்டறிதல் மற்றும் சிகிச்சை திட்டத்தைப் பெற உங்கள் தாவரத்தின் புகைப்படத்தைப் பதிவேற்றவும்.',
     newDiagnosis: 'புதிய கண்டறிதல்',
     plantPhoto: 'தாவரத்தின் புகைப்படம்',
@@ -398,7 +398,7 @@ const translations = {
     humidity: 'ஈரப்பதம்',
     windSpeed: 'காற்றின் வேகம்',
     visibility: 'பார்வைநிலை',
-    sevenDayForecast: '7-நாள் விவசாய முன்னறிவிப்பு',
+    sevenDayForecast: 'விவசாய முன்னறிவிப்பு',
     rainChance: 'மழை வாய்ப்பு',
 
     // Profile Page
