@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useFormState } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Bot, Loader2 } from 'lucide-react';
 
@@ -17,16 +17,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getSmartCropSuggestions } from './actions';
 import { useLanguage } from '@/lib/i18n';
 
 const formSchema = z.object({
   farmLocation: z.string().min(2, "Farm location is required."),
-  weatherPatterns: z.string().min(10, "Weather patterns description is required."),
-  soilData: z.string().min(10, "Soil data is required."),
-  marketTrends: z.string().min(10, "Market trends information is required."),
 });
 
 export default function CropSuggestionsPage() {
@@ -38,9 +34,6 @@ export default function CropSuggestionsPage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       farmLocation: "",
-      weatherPatterns: "",
-      soilData: "",
-      marketTrends: "",
     },
   });
 
@@ -79,45 +72,9 @@ export default function CropSuggestionsPage() {
                       <FormControl>
                         <Input placeholder={t('farmLocationPlaceholder')} {...field} />
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="weatherPatterns"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('weatherPatterns')}</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder={t('weatherPatternsPlaceholder')} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="soilData"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('soilData')}</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder={t('soilDataPlaceholder')} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="marketTrends"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('marketTrends')}</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder={t('marketTrendsPlaceholder')} {...field} />
-                      </FormControl>
+                      <FormDescription>
+                        The AI will analyze the location and current season for the best recommendations.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
