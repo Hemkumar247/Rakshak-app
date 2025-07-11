@@ -19,6 +19,7 @@ const SmartCropSuggestionsInputSchema = z.object({
   farmLocation: z
     .string()
     .describe('The geographical location of the farm (e.g., city, state, country, or specific address).'),
+  language: z.string().describe("The language for the response (e.g., 'en' for English, 'hi' for Hindi)."),
 });
 export type SmartCropSuggestionsInput = z.infer<typeof SmartCropSuggestionsInputSchema>;
 
@@ -49,6 +50,8 @@ const smartCropSuggestionsPrompt = ai.definePrompt({
   Based on the farm's location, analyze the regional climate, typical soil types, and the current season.
   
   Recommend a list of the 3 most suitable crops for cultivation at this specific time of year in that location. For each crop, provide a brief, easy-to-understand list of reasons why it is a good choice, considering factors like climate suitability, profitability, and seasonal timing.
+
+  Respond in the following language: {{language}}.
 
   Farm Location: {{{farmLocation}}}
   

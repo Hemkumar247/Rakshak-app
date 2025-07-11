@@ -13,6 +13,7 @@ import {z} from 'genkit';
 const AgronomicTipsInputSchema = z.object({
   cropType: z.string().describe('The type of crop being grown (e.g., corn, soybeans, wheat).'),
   farmConditions: z.string().describe('A description of the current farm conditions, including soil type, weather patterns, and any known issues (e.g., pests, diseases, nutrient deficiencies).'),
+  language: z.string().describe("The language for the response (e.g., 'en' for English, 'hi' for Hindi)."),
 });
 export type AgronomicTipsInput = z.infer<typeof AgronomicTipsInputSchema>;
 
@@ -33,6 +34,8 @@ const prompt = ai.definePrompt({
 
   Based on the crop type and farm conditions provided, generate a list of agronomic tips and potential action items.
   Summarize from relevant agronomic sources, and tailor the advice to the specific situation.
+
+  Respond in the following language: {{language}}.
 
   Crop Type: {{{cropType}}}
   Farm Conditions: {{{farmConditions}}}

@@ -30,7 +30,7 @@ const formSchema = z.object({
 type Recommendation = SmartCropSuggestionsOutput['recommendations'][0];
 
 export default function CropSuggestionsPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [recommendations, setRecommendations] = useState<Recommendation[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -45,7 +45,7 @@ export default function CropSuggestionsPage() {
     setIsLoading(true);
     setRecommendations(null);
     try {
-      const result = await getSmartCropSuggestions(values);
+      const result = await getSmartCropSuggestions({ ...values, language });
       setRecommendations(result.recommendations);
     } catch (error) {
       console.error("Failed to get crop suggestions:", error);
@@ -62,7 +62,7 @@ export default function CropSuggestionsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        <Card className="shadow-lg border-white/40 sticky top-6">
+        <Card className="shadow-lg border-white/40">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 font-headline">
               <Bot /> {t('getSuggestions')}

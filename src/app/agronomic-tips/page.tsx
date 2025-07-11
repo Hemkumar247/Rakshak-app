@@ -27,7 +27,7 @@ const formSchema = z.object({
 });
 
 export default function AgronomicTipsPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [tips, setTips] = useState<string[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,7 +43,7 @@ export default function AgronomicTipsPage() {
     setIsLoading(true);
     setTips(null);
     try {
-      const result = await getAIAgronomicTips(values);
+      const result = await getAIAgronomicTips({ ...values, language });
       setTips(result.tips);
     } catch (error) {
       console.error("Failed to get agronomic tips:", error);
