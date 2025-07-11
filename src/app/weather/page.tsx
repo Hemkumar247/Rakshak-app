@@ -84,6 +84,8 @@ export default function WeatherPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const [location, setLocation] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -95,6 +97,7 @@ export default function WeatherPage() {
     setForecastsWithTips([]);
     setCurrentWeather(null);
     setLocation(loc);
+    setError(null);
 
     try {
       const weatherData = await getRealtimeWeather(loc);
@@ -119,8 +122,14 @@ export default function WeatherPage() {
       }));
       setForecastsWithTips(updatedForecasts);
 
-    } catch (error) {
-      console.error("Failed to fetch weather data or AI tips", error);
+    } catch (err: any) {
+      console.error("Failed to fetch weather data or AI tips", err);
+      setError(err.message || "Failed to fetch weather data. Please check the location and try again.");
+      toast({
+        variant: 'destructive',
+        title: 'Error Fetching Weather',
+        description: err.message || "Could not fetch weather data for the specified location.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -154,6 +163,7 @@ export default function WeatherPage() {
             title: "Location Found",
             description: "Your location has been filled in.",
           });
+          await fetchWeather(locationString);
         } catch (e) {
             console.error("Reverse geocoding failed", e);
             const locationString = `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)}`;
@@ -163,6 +173,7 @@ export default function WeatherPage() {
                 title: "Could not fetch address",
                 description: "Using coordinates instead.",
             });
+            await fetchWeather(locationString);
         } finally {
             setIsLocating(false);
         }
@@ -208,8 +219,8 @@ export default function WeatherPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="flex flex-col sm:flex-row items-start gap-2">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+              <div className="flex flex-col sm:flex-row items-center gap-2">
                 <FormField
                   control={form.control}
                   name="location"
@@ -227,8 +238,8 @@ export default function WeatherPage() {
                   )}
                 />
                 <Button type="button" variant="outline" onClick={handleGetLocation} disabled={isLocating || isLoading} className="w-full sm:w-auto shrink-0">
-                    {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <LocateFixed className="h-4 w-4" />}
-                    <span className="sm:hidden">Use My Location</span>
+                    {isLocating ? <Loader2 className="h-5 w-5 animate-spin" /> : <LocateFixed className="h-5 w-5" />}
+                    <span className="ml-2 sm:hidden">Use My Location</span>
                 </Button>
               </div>
               <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
@@ -240,20 +251,54 @@ export default function WeatherPage() {
         </CardContent>
       </Card>
       
-      {location && (
+      {isLoading && (
+         <div className="space-y-6">
+            <Card className="shadow-lg border-white/40">
+              <CardHeader>
+                  <Skeleton className="h-7 w-3/4" />
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                  <Skeleton className="h-10 w-32 mx-auto" />
+                  <Skeleton className="h-10 w-32 mx-auto" />
+                  <Skeleton className="h-10 w-32 mx-auto" />
+                </div>
+              </CardContent>
+            </Card>
+            <div>
+              <Skeleton className="h-7 w-1/2 mb-4" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {Array.from({ length: 7 }).map((_, i) => (
+                    <Card key={i} className="shadow-lg border-white/40 p-4 space-y-3">
+                        <Skeleton className="h-5 w-24" />
+                        <Skeleton className="h-4 w-32" />
+                        <div className="flex justify-between items-center">
+                            <Skeleton className="h-10 w-10 rounded-full" />
+                            <Skeleton className="h-6 w-20" />
+                        </div>
+                        <Separator />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full" />
+                        <Separator />
+                         <div className="flex items-center gap-2">
+                            <Skeleton className="h-4 w-4 rounded-full" />
+                            <Skeleton className="h-4 w-48" />
+                        </div>
+                    </Card>
+                ))}
+              </div>
+            </div>
+         </div>
+      )}
+
+      {!isLoading && location && !error && (
         <>
         <Card className="shadow-lg border-white/40">
             <CardHeader>
                 <CardTitle className="font-headline">{t('currentConditions')} in <span className="text-primary">{location}</span></CardTitle>
             </CardHeader>
             <CardContent className="p-6">
-              {isLoading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                  <Skeleton className="h-10 w-32 mx-auto" />
-                  <Skeleton className="h-10 w-32 mx-auto" />
-                  <Skeleton className="h-10 w-32 mx-auto" />
-                </div>
-              ) : currentWeather && (
+              {currentWeather && (
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                     <div className="flex items-center justify-center gap-3">
                     <Thermometer className="h-7 w-7 text-destructive" />
@@ -284,27 +329,7 @@ export default function WeatherPage() {
         <div>
             <h2 className="text-xl font-headline font-semibold mb-4">{t('sevenDayForecast')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {isLoading ? (
-                Array.from({ length: 7 }).map((_, i) => (
-                    <Card key={i} className="shadow-lg border-white/40 p-4 space-y-3">
-                        <Skeleton className="h-5 w-24" />
-                        <Skeleton className="h-4 w-32" />
-                        <div className="flex justify-between items-center">
-                            <Skeleton className="h-10 w-10 rounded-full" />
-                            <Skeleton className="h-6 w-20" />
-                        </div>
-                        <Separator />
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-full" />
-                        <Separator />
-                         <div className="flex items-center gap-2">
-                             <Loader2 className="h-4 w-4 animate-spin text-primary"/>
-                            <Skeleton className="h-4 w-48" />
-                        </div>
-                    </Card>
-                ))
-            ) : (
-                forecastsWithTips.map((day) => (
+                {forecastsWithTips.map((day) => (
                     <Card key={day.day} className="shadow-lg border-white/40 p-4 flex flex-col">
                     <div>
                         <h3 className="font-bold font-headline">{day.day}</h3>
@@ -335,7 +360,7 @@ export default function WeatherPage() {
                     </Alert>
                     </Card>
                 ))
-            )}
+            }
             </div>
         </div>
         </>
@@ -345,9 +370,20 @@ export default function WeatherPage() {
             <CardHeader>
                 <CardTitle className="font-headline text-2xl">See Your Farm's Forecast</CardTitle>
             </CardHeader>
-            <CardContent>Enter a location above to get started.</CardContent>
+            <CardContent>Enter a location or use your current one to get started.</CardContent>
+        </Card>
+      )}
+
+      {error && !isLoading && (
+        <Card className="shadow-lg border-destructive/50 flex flex-col items-center justify-center text-center py-16">
+            <CardHeader>
+                <CardTitle className="font-headline text-2xl text-destructive">Could not load weather</CardTitle>
+            </CardHeader>
+            <CardContent className="text-destructive/80">{error}</CardContent>
         </Card>
       )}
     </div>
   );
 }
+
+    
