@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { HeartPulse, LayoutDashboard, Sprout, BarChart3, ScrollText, Sun, User } from 'lucide-react';
+import { HeartPulse, LayoutDashboard, Sprout, TrendingUp, ScrollText, Sun, User } from 'lucide-react';
 
 import {
   SidebarHeader,
@@ -43,9 +43,9 @@ export function SidebarNav() {
         icon: Sun,
     },
     {
-      href: '/data-visualization',
-      label: t('dataVisualization'),
-      icon: BarChart3,
+      href: '/market-analysis',
+      label: t('marketAnalysis'),
+      icon: TrendingUp,
     },
     {
       href: '/schemes',
