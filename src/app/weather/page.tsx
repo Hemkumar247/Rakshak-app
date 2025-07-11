@@ -7,49 +7,65 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLanguage } from '@/lib/i18n';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Thermometer, Droplets, Wind, Sun, Cloud, CloudRain, CloudSun, CloudDrizzle, Sparkles, Loader2, MapPin, LocateFixed } from 'lucide-react';
+import { Thermometer, Droplets, Wind, Sun, Cloud, CloudRain, CloudSun, CloudDrizzle, Sparkles, Loader2, MapPin, LocateFixed, CloudLightning, CloudSnow, SunMoon, Moon, CloudFog } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import { getAIFarmTip } from './actions';
+import { getAIFarmTip, getRealtimeWeather, type WeatherData } from './actions';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// Mock function to generate forecast data based on location
-const getForecastForLocation = (location: string) => {
-    // In a real app, this would be an API call.
-    // Here, we generate consistent but mock data based on a hash of the location string.
-    let hash = 0;
-    for (let i = 0; i < location.length; i++) {
-        const char = location.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash |= 0; // Convert to 32bit integer
-    }
-
-    const conditions = ['Sunny', 'Partly Cloudy', 'Cloudy', 'Scattered Showers', 'Rain'];
-    const icons = [Sun, CloudSun, Cloud, CloudDrizzle, CloudRain];
-    
-    const forecasts = Array.from({ length: 7 }).map((_, i) => {
-        const daySeed = Math.abs(hash + i * 10);
-        const conditionIndex = daySeed % conditions.length;
-        return {
-            day: i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : new Date(Date.now() + i * 86400000).toLocaleDateString('en-US', { weekday: 'long' }),
-            condition: conditions[conditionIndex],
-            high: 20 + (daySeed % 12),
-            low: 10 + (daySeed % 8),
-            humidity: 50 + (daySeed % 35),
-            rainChance: conditionIndex < 3 ? (daySeed % 15) : 30 + (daySeed % 50),
-            icon: icons[conditionIndex],
-        };
-    });
-    return forecasts;
-};
-
-const currentConditions = {
-  temperature: 22,
-  humidity: 65,
-  windSpeed: 8,
+const conditionToIconMap: { [key: string]: React.ElementType } = {
+  'Sunny': Sun,
+  'Clear': Moon,
+  'Partly cloudy': CloudSun,
+  'Cloudy': Cloud,
+  'Overcast': Cloud,
+  'Mist': CloudFog,
+  'Patchy rain possible': CloudDrizzle,
+  'Patchy snow possible': CloudSnow,
+  'Patchy sleet possible': CloudDrizzle,
+  'Patchy freezing drizzle possible': CloudDrizzle,
+  'Thundery outbreaks possible': CloudLightning,
+  'Blowing snow': CloudSnow,
+  'Blizzard': CloudSnow,
+  'Fog': CloudFog,
+  'Freezing fog': CloudFog,
+  'Patchy light drizzle': CloudDrizzle,
+  'Light drizzle': CloudDrizzle,
+  'Freezing drizzle': CloudDrizzle,
+  'Heavy freezing drizzle': CloudDrizzle,
+  'Patchy light rain': CloudRain,
+  'Light rain': CloudRain,
+  'Moderate rain at times': CloudRain,
+  'Moderate rain': CloudRain,
+  'Heavy rain at times': CloudRain,
+  'Heavy rain': CloudRain,
+  'Light freezing rain': CloudRain,
+  'Moderate or heavy freezing rain': CloudRain,
+  'Light sleet': CloudDrizzle,
+  'Moderate or heavy sleet': CloudDrizzle,
+  'Patchy light snow': CloudSnow,
+  'Light snow': CloudSnow,
+  'Patchy moderate snow': CloudSnow,
+  'Moderate snow': CloudSnow,
+  'Patchy heavy snow': CloudSnow,
+  'Heavy snow': CloudSnow,
+  'Ice pellets': CloudSnow,
+  'Light rain shower': CloudRain,
+  'Moderate or heavy rain shower': CloudRain,
+  'Torrential rain shower': CloudRain,
+  'Light sleet showers': CloudDrizzle,
+  'Moderate or heavy sleet showers': CloudDrizzle,
+  'Light snow showers': CloudSnow,
+  'Moderate or heavy snow showers': CloudSnow,
+  'Light showers of ice pellets': CloudSnow,
+  'Moderate or heavy showers of ice pellets': CloudSnow,
+  'Patchy light rain with thunder': CloudLightning,
+  'Moderate or heavy rain with thunder': CloudLightning,
+  'Patchy light snow with thunder': CloudLightning,
+  'Moderate or heavy snow with thunder': CloudLightning,
 };
 
 const formSchema = z.object({
@@ -57,10 +73,11 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
-type ForecastWithTip = ReturnType<typeof getForecastForLocation>[0] & { tip?: string };
+type ForecastWithTip = WeatherData['forecast'][0] & { tip?: string };
 
 export default function WeatherPage() {
   const { t, language } = useLanguage();
+  const [currentWeather, setCurrentWeather] = useState<WeatherData['current'] | null>(null);
   const [forecastsWithTips, setForecastsWithTips] = useState<ForecastWithTip[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [location, setLocation] = useState<string | null>(null);
@@ -70,44 +87,52 @@ export default function WeatherPage() {
     defaultValues: { location: "" },
   });
 
-  async function onSubmit(values: FormValues) {
+  const fetchWeather = async (loc: string) => {
     setIsLoading(true);
     setForecastsWithTips([]);
-    setLocation(values.location);
-
-    const dailyForecasts = getForecastForLocation(values.location);
-
-    const tipsPromises = dailyForecasts.map(day =>
-      getAIFarmTip({
-        condition: day.condition,
-        tempHigh: day.high,
-        tempLow: day.low,
-        rainChance: day.rainChance,
-        humidity: day.humidity,
-        language: language,
-      })
-    );
+    setCurrentWeather(null);
+    setLocation(loc);
 
     try {
+      const weatherData = await getRealtimeWeather(loc);
+      setCurrentWeather(weatherData.current);
+
+      const tipsPromises = weatherData.forecast.map(day =>
+        getAIFarmTip({
+          condition: day.condition,
+          tempHigh: day.high,
+          tempLow: day.low,
+          rainChance: day.rainChance,
+          humidity: day.humidity,
+          language: language,
+        })
+      );
+      
       const tipsResults = await Promise.all(tipsPromises);
-      const updatedForecasts = dailyForecasts.map((day, index) => ({
+      const updatedForecasts = weatherData.forecast.map((day, index) => ({
         ...day,
+        icon: conditionToIconMap[day.condition] || Sun,
         tip: tipsResults[index].tip,
       }));
       setForecastsWithTips(updatedForecasts);
+
     } catch (error) {
-      console.error("Failed to fetch AI tips", error);
-      setForecastsWithTips(dailyForecasts); // Fallback to forecasts without tips
+      console.error("Failed to fetch weather data or AI tips", error);
     } finally {
       setIsLoading(false);
     }
+  }
+
+  async function onSubmit(values: FormValues) {
+    await fetchWeather(values.location);
   }
   
   // Re-fetch tips when language changes
   useEffect(() => {
     if (location) {
-      onSubmit({ location });
+      fetchWeather(location);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language]);
 
 
@@ -157,29 +182,37 @@ export default function WeatherPage() {
                 <CardTitle className="font-headline">{t('currentConditions')} in <span className="text-primary">{location}</span></CardTitle>
             </CardHeader>
             <CardContent className="p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                <div className="flex items-center justify-center gap-3">
-                <Thermometer className="h-7 w-7 text-destructive" />
-                <div>
-                    <p className="text-muted-foreground text-sm">{t('temperature')}</p>
-                    <p className="font-bold text-lg">{forecastsWithTips[0]?.high || currentConditions.temperature}°C</p>
+              {isLoading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                  <Skeleton className="h-10 w-32 mx-auto" />
+                  <Skeleton className="h-10 w-32 mx-auto" />
+                  <Skeleton className="h-10 w-32 mx-auto" />
                 </div>
+              ) : currentWeather && (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                    <div className="flex items-center justify-center gap-3">
+                    <Thermometer className="h-7 w-7 text-destructive" />
+                    <div>
+                        <p className="text-muted-foreground text-sm">{t('temperature')}</p>
+                        <p className="font-bold text-lg">{currentWeather.temperature}°C</p>
+                    </div>
+                    </div>
+                    <div className="flex items-center justify-center gap-3">
+                    <Droplets className="h-7 w-7 text-blue-500" />
+                    <div>
+                        <p className="text-muted-foreground text-sm">{t('humidity')}</p>
+                        <p className="font-bold text-lg">{currentWeather.humidity}%</p>
+                    </div>
+                    </div>
+                    <div className="flex items-center justify-center gap-3">
+                    <Wind className="h-7 w-7 text-gray-500" />
+                    <div>
+                        <p className="text-muted-foreground text-sm">{t('windSpeed')}</p>
+                        <p className="font-bold text-lg">{currentWeather.windSpeed} kph</p>
+                    </div>
+                    </div>
                 </div>
-                <div className="flex items-center justify-center gap-3">
-                <Droplets className="h-7 w-7 text-blue-500" />
-                <div>
-                    <p className="text-muted-foreground text-sm">{t('humidity')}</p>
-                    <p className="font-bold text-lg">{forecastsWithTips[0]?.humidity || currentConditions.humidity}%</p>
-                </div>
-                </div>
-                <div className="flex items-center justify-center gap-3">
-                <Wind className="h-7 w-7 text-gray-500" />
-                <div>
-                    <p className="text-muted-foreground text-sm">{t('windSpeed')}</p>
-                    <p className="font-bold text-lg">{currentConditions.windSpeed} mph</p>
-                </div>
-                </div>
-            </div>
+              )}
             </CardContent>
         </Card>
       
