@@ -22,9 +22,15 @@ const SmartCropSuggestionsInputSchema = z.object({
 });
 export type SmartCropSuggestionsInput = z.infer<typeof SmartCropSuggestionsInputSchema>;
 
+const CropRecommendationSchema = z.object({
+    cropName: z.string().describe('The name of the suggested crop.'),
+    reasoning: z.array(z.string()).describe('A short, crisp list of reasons why this crop is a good choice.'),
+    imageQuery: z.string().describe('A one or two-word query for a stock photo of this crop.'),
+});
+
 const SmartCropSuggestionsOutputSchema = z.object({
-  cropRecommendations: z
-    .string()
+  recommendations: z
+    .array(CropRecommendationSchema)
     .describe('A list of crop recommendations, with reasoning, based on the location and current season.'),
 });
 export type SmartCropSuggestionsOutput = z.infer<typeof SmartCropSuggestionsOutputSchema>;
@@ -41,11 +47,11 @@ const smartCropSuggestionsPrompt = ai.definePrompt({
 
   Based on the farm's location, analyze the regional climate, typical soil types, and the current season.
   
-  Recommend a list of the most suitable crops for cultivation at this specific time of year in that location. For each crop, provide a brief explanation for why it is a good choice, considering factors like climate suitability, profitability, and seasonal timing.
+  Recommend a list of the 3 most suitable crops for cultivation at this specific time of year in that location. For each crop, provide a brief, easy-to-understand list of reasons why it is a good choice, considering factors like climate suitability, profitability, and seasonal timing.
 
   Farm Location: {{{farmLocation}}}
-
-  Format your response as a clear, easy-to-read paragraph.`,
+  
+  Keep the reasoning points very concise and simple for a farmer to understand.`,
 });
 
 const smartCropSuggestionsFlow = ai.defineFlow(
