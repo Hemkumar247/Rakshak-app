@@ -109,11 +109,12 @@ export default function CropSuggestionsPage() {
                 <Card key={rec.cropName} className="shadow-lg border-white/40 overflow-hidden">
                     <div className="relative h-48 w-full">
                         <Image 
-                            src={`https://placehold.co/600x400.png`} 
+                            src={rec.imageDataUri || `https://placehold.co/600x400.png`} 
                             alt={rec.cropName} 
                             layout="fill" 
                             objectFit="cover"
                             data-ai-hint={rec.imageQuery}
+                            unoptimized={rec.imageDataUri?.startsWith('data:image')}
                         />
                     </div>
                   <CardHeader>

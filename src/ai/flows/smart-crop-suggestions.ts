@@ -5,7 +5,7 @@
  * @fileOverview This file defines a Genkit flow for providing smart crop suggestions to farmers.
  *
  * The flow takes a farm location as input, determines the current season, and
- * returns crop recommendations suitable for that region and time of year.
+ * returns crop recommendations suitable for that region and time of year, including a generated image for each.
  *
  * @exports smartCropSuggestions - The main function to trigger the crop suggestion flow.
  * @exports SmartCropSuggestionsInput - The input type for the smartCropSuggestions function.
@@ -26,12 +26,13 @@ const CropRecommendationSchema = z.object({
     cropName: z.string().describe('The name of the suggested crop.'),
     reasoning: z.array(z.string()).describe('A short, crisp list of reasons why this crop is a good choice.'),
     imageQuery: z.string().describe('A one or two-word query for a stock photo of this crop.'),
+    imageDataUri: z.string().describe("A generated image of the crop, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'.").optional(),
 });
 
 const SmartCropSuggestionsOutputSchema = z.object({
   recommendations: z
     .array(CropRecommendationSchema)
-    .describe('A list of crop recommendations, with reasoning, based on the location and current season.'),
+    .describe('A list of crop recommendations, with reasoning and a generated image, based on the location and current season.'),
 });
 export type SmartCropSuggestionsOutput = z.infer<typeof SmartCropSuggestionsOutputSchema>;
 
@@ -67,6 +68,32 @@ const smartCropSuggestionsFlow = ai.defineFlow(
       ...input,
       currentDate,
     });
-    return output!;
+
+    if (!output?.recommendations) {
+      return { recommendations: [] };
+    }
+
+    // Generate an image for each recommendation
+    const imagePromises = output.recommendations.map(async (rec) => {
+      try {
+        const {media} = await ai.generate({
+          model: 'googleai/gemini-2.0-flash-preview-image-generation',
+          prompt: `A vibrant, high-quality photo of ${rec.imageQuery} growing in a field, suitable for an agricultural advisory app.`,
+          config: {
+            responseModalities: ['TEXT', 'IMAGE'],
+          },
+        });
+        rec.imageDataUri = media.url;
+      } catch (e) {
+        console.error(`Failed to generate image for ${rec.cropName}`, e);
+        // Fallback to a placeholder URL if generation fails
+        rec.imageDataUri = `https://placehold.co/600x400.png?text=${rec.cropName.replace(/\s/g, '+')}`;
+      }
+      return rec;
+    });
+
+    const recommendationsWithImages = await Promise.all(imagePromises);
+
+    return { recommendations: recommendationsWithImages };
   }
 );
