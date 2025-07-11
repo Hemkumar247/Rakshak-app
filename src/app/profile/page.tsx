@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useState, useRef } from "react";
 import { useLanguage } from "@/lib/i18n";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,6 +11,23 @@ import { Label } from "@/components/ui/label";
 
 export default function ProfilePage() {
   const { t } = useLanguage();
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -24,10 +42,19 @@ export default function ProfilePage() {
         </CardHeader>
         <CardContent className="space-y-6">
             <div className="flex items-center gap-6">
-                <Avatar className="h-24 w-24">
-                    <AvatarImage src="https://placehold.co/100x100.png" alt="User Avatar" data-ai-hint="avatar man" />
-                    <AvatarFallback>U</AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                    <Avatar className="h-24 w-24 cursor-pointer" onClick={handleAvatarClick}>
+                        <AvatarImage src={preview || "https://placehold.co/100x100.png"} alt="User Avatar" data-ai-hint="avatar man" />
+                        <AvatarFallback>U</AvatarFallback>
+                    </Avatar>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                    />
+                </div>
                 <div className="space-y-1">
                     <h2 className="text-2xl font-bold">John Doe</h2>
                     <p className="text-muted-foreground">j.doe@example.com</p>
