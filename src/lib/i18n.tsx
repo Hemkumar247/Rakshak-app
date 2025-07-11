@@ -113,7 +113,7 @@ const translations = {
     schemesPageDescription: 'Explore government schemes and subsidies available for farmers.',
     
     // Weather Page
-    weatherForecastTitle: '7-Day Farming Forecast',
+    weatherForecastTitle: 'Farming Forecast',
     weatherForecastDescription: 'Detailed weather information to help you plan your week.',
     currentConditions: 'Current Conditions',
     temperature: 'Temperature',
@@ -252,7 +252,7 @@ const translations = {
     schemesPageDescription: 'किसानों के लिए उपलब्ध सरकारी योजनाओं और सब्सिडी का अन्वेषण करें।',
 
     // Weather Page
-    weatherForecastTitle: '7-दिवसीय कृषि पूर्वानुमान',
+    weatherForecastTitle: 'कृषि पूर्वानुमान',
     weatherForecastDescription: 'आपके सप्ताह की योजना बनाने में मदद करने के लिए विस्तृत मौसम जानकारी।',
     currentConditions: 'वर्तमान स्थितियाँ',
     temperature: 'तापमान',
@@ -391,7 +391,7 @@ const translations = {
     schemesPageDescription: 'விவசாயிகளுக்கு கிடைக்கும் அரசாங்க திட்டங்கள் மற்றும் மானியங்களை ஆராயுங்கள்.',
 
     // Weather Page
-    weatherForecastTitle: '7-நாள் விவசாய முன்னறிவிப்பு',
+    weatherForecastTitle: 'விவசாய முன்னறிவிப்பு',
     weatherForecastDescription: 'உங்கள் வாரத்தைத் திட்டமிட உதவும் விரிவான வானிலை தகவல்.',
     currentConditions: 'தற்போதைய நிலைமைகள்',
     temperature: 'வெப்பநிலை',
