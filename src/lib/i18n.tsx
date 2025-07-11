@@ -2,12 +2,12 @@
 
 import React, { createContext, useState, useContext, useMemo } from 'react';
 
-type Language = 'en' | 'hi';
+type Language = 'en' | 'hi' | 'ta';
 
 const translations = {
   en: {
     // General
-    appName: 'Rakshak Crop Advisor',
+    appName: 'Rakshak',
     loading: 'Loading...',
     submit: 'Submit',
 
@@ -61,7 +61,7 @@ const translations = {
   },
   hi: {
     // General
-    appName: 'रक्षक फसल सलाहकार',
+    appName: 'रक्षक',
     loading: 'लोड हो रहा है...',
     submit: 'प्रस्तुत करें',
     
@@ -111,6 +111,59 @@ const translations = {
     weatherHistory: 'मौसम का इतिहास',
     soilComposition: 'मिट्टी की संरचना',
     marketTrendsChart: 'बाजार के रुझान (मूल्य/क्विंटल)',
+  },
+  ta: {
+    // General
+    appName: 'ரக்ஷக்',
+    loading: 'ஏற்றுகிறது...',
+    submit: 'சமர்ப்பிக்கவும்',
+    
+    // Sidebar
+    dashboard: 'டாஷ்போர்டு',
+    cropSuggestions: 'பயிர் பரிந்துரைகள்',
+    agronomicTips: 'வேளாண் குறிப்புகள்',
+    dataVisualization: 'தரவு காட்சிப்படுத்தல்',
+
+    // Dashboard
+    welcome: 'விவசாயி, வருக!',
+    dashboardDescription: 'உங்கள் பண்ணையின் தற்போதைய நிலையின் கண்ணோட்டம் இங்கே.',
+    weather: 'நிகழ்நேர வானிலை',
+    marketFactors: 'சந்தை காரணிகள்',
+    geographicalConditions: 'புவியியல் நிலைமைகள்',
+    currentTemp: 'தற்போதைய: 28°C, வெயில்',
+    soilPh: 'மண் pH',
+    elevation: 'உயரம்',
+    
+    // Crop Suggestions
+    cropSuggestionsTitle: 'ஸ்மார்ட் பயிர் பரிந்துரைகள்',
+    cropSuggestionsDescription: 'AI-இயங்கும் பயிர் பரிந்துரைகளைப் பெற கீழே உள்ள விவரங்களை நிரப்பவும்.',
+    farmLocation: 'பண்ணை இருப்பிடம்',
+    farmLocationPlaceholder: 'எ.கா., அட்சரேகை, தீர்க்கரேகை, அல்லது முகவரி',
+    weatherPatterns: 'வானிலை முறைகள்',
+    weatherPatternsPlaceholder: 'சமீபத்திய மற்றும் எதிர்பார்க்கப்படும் வானிலையை விவரிக்கவும்...',
+    soilData: 'மண் தரவு',
+    soilDataPlaceholder: 'மண் கலவை மற்றும் ஆரோக்கியத்தை விவரிக்கவும்...',
+    marketTrends: 'சந்தை போக்குகள்',
+    marketTrendsPlaceholder: 'தற்போதைய பயிர் சந்தை போக்குகளை விவரிக்கவும்...',
+    getSuggestions: 'பரிந்துரைகளைப் பெறுக',
+    recommendations: 'எங்கள் பரிந்துரைகள்',
+
+    // Agronomic Tips
+    agronomicTipsTitle: 'AI-இயங்கும் வேளாண் குறிப்புகள்',
+    agronomicTipsDescription: 'உங்கள் பயிர் ஆரோக்கியம் மற்றும் மகசூலை மேம்படுத்த AI-இயங்கும் குறிப்புகளைப் பெறுங்கள்.',
+    cropType: 'பயிர் வகை',
+    cropTypePlaceholder: 'எ.கா., சோளம், கோதுமை, சோயாபீன்ஸ்',
+    farmConditions: 'பண்ணை நிலைமைகள்',
+    farmConditionsPlaceholder: 'தற்போதைய பண்ணை நிலைமைகளை விவரிக்கவும்...',
+    getTips: 'குறிப்புகளைப் பெறுக',
+    tips: 'வேளாண் குறிப்புகள்',
+    
+    // Data Visualization
+    dataVisualizationTitle: 'வரலாற்று தரவு நுண்ணறிவு',
+    dataVisualizationDescription: 'காலப்போக்கில் வானிலை, மண் மற்றும் சந்தை போக்குகளைக் கண்காணிக்கவும்.',
+    weatherHistory: 'வானிலை வரலாறு',
+    soilComposition: 'மண் கலவை',
+    marketTrendsChart: 'சந்தை போக்குகள் (விலை/குவிண்டால்)',
   },
 };
 

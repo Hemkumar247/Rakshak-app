@@ -6,7 +6,7 @@ import { LanguageProvider } from '@/lib/i18n';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'Rakshak Crop Advisor',
+  title: 'Rakshak',
   description: 'AI-powered crop advisory for modern farming.',
 };
 

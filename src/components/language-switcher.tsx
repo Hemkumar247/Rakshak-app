@@ -29,6 +29,9 @@ export function LanguageSwitcher() {
         <DropdownMenuItem onClick={() => setLanguage('hi')} disabled={language === 'hi'}>
           हिंदी (Hindi)
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setLanguage('ta')} disabled={language === 'ta'}>
+          தமிழ் (Tamil)
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
