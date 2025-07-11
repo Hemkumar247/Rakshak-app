@@ -79,6 +79,7 @@ export default function CropSuggestionsPage() {
         const { latitude, longitude } = position.coords;
         try {
           const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
+          if (!response.ok) throw new Error("Failed to fetch address");
           const data = await response.json();
           const locationString = data.display_name || `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)}`;
           form.setValue('farmLocation', locationString, { shouldValidate: true });
