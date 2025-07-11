@@ -55,8 +55,8 @@ export default function CropSuggestionsPage() {
       console.error("Failed to get crop suggestions:", error);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to get crop suggestions. Please try again.",
+        title: t('errorTitle'),
+        description: t('errorDescription'),
       });
     } finally {
       setIsLoading(false);
@@ -145,13 +145,12 @@ export default function CropSuggestionsPage() {
                         <FormControl>
                           <Input placeholder={t('farmLocationPlaceholder')} {...field} />
                         </FormControl>
-                        <Button type="button" variant="outline" onClick={handleGetLocation} disabled={isLocating}>
+                        <Button type="button" variant="outline" onClick={handleGetLocation} disabled={isLocating} aria-label="Use My Location">
                             {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
-                            <span className="sr-only">Use My Location</span>
                         </Button>
                       </div>
                       <FormDescription>
-                        The AI will analyze the location and current season for the best recommendations.
+                        {t('cropSuggestionsDescription')}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>

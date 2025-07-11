@@ -38,7 +38,7 @@ const translations = {
 
     // Crop Suggestions
     cropSuggestionsTitle: 'Smart Crop Suggestions',
-    cropSuggestionsDescription: 'Fill in the details below to get AI-powered crop recommendations.',
+    cropSuggestionsDescription: 'The AI will analyze the location and current season for the best recommendations.',
     farmLocation: 'Farm Location',
     farmLocationPlaceholder: 'e.g., Latitude, Longitude, or Address',
     getSuggestions: 'Get Suggestions',
@@ -118,7 +118,7 @@ const translations = {
     
     // Crop Suggestions
     cropSuggestionsTitle: 'स्मार्ट फसल सुझाव',
-    cropSuggestionsDescription: 'एआई-संचालित फसल सिफारिशें प्राप्त करने के लिए नीचे दिए गए विवरण भरें।',
+    cropSuggestionsDescription: 'एआई सर्वोत्तम सिफारिशों के लिए स्थान और वर्तमान मौसम का विश्लेषण करेगा।',
     farmLocation: 'खेत का स्थान',
     farmLocationPlaceholder: 'उदा., अक्षांश, देशांतर, या पता',
     getSuggestions: 'सुझाव प्राप्त करें',
@@ -198,7 +198,7 @@ const translations = {
     
     // Crop Suggestions
     cropSuggestionsTitle: 'ஸ்மார்ட் பயிர் பரிந்துரைகள்',
-    cropSuggestionsDescription: 'AI-இயங்கும் பயிர் பரிந்துரைகளைப் பெற கீழே உள்ள விவரங்களை நிரப்பவும்.',
+    cropSuggestionsDescription: 'சிறந்த பரிந்துரைகளுக்கு AI இருப்பிடம் மற்றும் தற்போதைய பருவத்தை பகுப்பாய்வு செய்யும்.',
     farmLocation: 'பண்ணை இருப்பிடம்',
     farmLocationPlaceholder: 'எ.கா., அட்சரேகை, தீர்க்கரேகை, அல்லது முகவரி',
     getSuggestions: 'பரிந்துரைகளைப் பெறுக',
