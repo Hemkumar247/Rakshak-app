@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
 
 const conditionToIconMap: { [key: string]: React.ElementType } = {
   'Sunny': Sun,
@@ -77,9 +78,11 @@ type ForecastWithTip = WeatherData['forecast'][0] & { tip?: string };
 
 export default function WeatherPage() {
   const { t, language } = useLanguage();
+  const { toast } = useToast();
   const [currentWeather, setCurrentWeather] = useState<WeatherData['current'] | null>(null);
   const [forecastsWithTips, setForecastsWithTips] = useState<ForecastWithTip[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
   const [location, setLocation] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
@@ -127,6 +130,62 @@ export default function WeatherPage() {
     await fetchWeather(values.location);
   }
   
+  async function handleGetLocation() {
+    if (!navigator.geolocation) {
+      toast({
+        variant: "destructive",
+        title: "Geolocation Not Supported",
+        description: "Your browser does not support geolocation.",
+      });
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
+          if (!response.ok) throw new Error("Failed to fetch address");
+          const data = await response.json();
+          const locationString = data.display_name || `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)}`;
+          form.setValue('location', locationString, { shouldValidate: true });
+          toast({
+            title: "Location Found",
+            description: "Your location has been filled in.",
+          });
+        } catch (e) {
+            console.error("Reverse geocoding failed", e);
+            const locationString = `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)}`;
+            form.setValue('location', locationString, { shouldValidate: true });
+            toast({
+                variant: "destructive",
+                title: "Could not fetch address",
+                description: "Using coordinates instead.",
+            });
+        } finally {
+            setIsLocating(false);
+        }
+      },
+      (error) => {
+        setIsLocating(false);
+        let description = "An unknown error occurred.";
+        if (error.code === error.PERMISSION_DENIED) {
+            description = "You denied the request for Geolocation.";
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+            description = "Location information is unavailable.";
+        } else if (error.code === error.TIMEOUT) {
+            description = "The request to get user location timed out.";
+        }
+        toast({
+          variant: "destructive",
+          title: "Error Getting Location",
+          description,
+        });
+      }
+    );
+  }
+
   // Re-fetch tips when language changes
   useEffect(() => {
     if (location) {
@@ -149,25 +208,31 @@ export default function WeatherPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col sm:flex-row items-start gap-4">
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel className="sr-only">Location</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <Input placeholder={t('farmLocationPlaceholder')} {...field} className="pl-10" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <div className="flex flex-col sm:flex-row items-start gap-2">
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel className="sr-only">Location</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                          <Input placeholder={t('farmLocationPlaceholder')} {...field} className="pl-10" />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="button" variant="outline" onClick={handleGetLocation} disabled={isLocating || isLoading} className="w-full sm:w-auto shrink-0">
+                    {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <LocateFixed className="h-4 w-4" />}
+                    <span className="sm:hidden">Use My Location</span>
+                </Button>
+              </div>
               <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LocateFixed />}
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 <span>{t('getSuggestions')}</span>
               </Button>
             </form>
@@ -279,8 +344,8 @@ export default function WeatherPage() {
         <Card className="shadow-lg border-white/40 flex flex-col items-center justify-center text-center py-16">
             <CardHeader>
                 <CardTitle className="font-headline text-2xl">See Your Farm's Forecast</CardTitle>
-                <CardContent>Enter a location above to get started.</CardContent>
             </CardHeader>
+            <CardContent>Enter a location above to get started.</CardContent>
         </Card>
       )}
     </div>
