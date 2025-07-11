@@ -33,7 +33,7 @@ export function GeoCard() {
         <div className="flex-grow" />
         <Button asChild variant="ghost" className="mt-4 self-end text-sm text-primary hover:text-primary/90">
           <Link href="/crop-suggestions">
-            Get Suggestions
+            {t('getSuggestions')}
             <ChevronRight className="h-4 w-4 ml-1" />
           </Link>
         </Button>

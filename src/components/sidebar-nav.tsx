@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { HeartPulse, LayoutDashboard, Sprout, BarChart3 } from 'lucide-react';
+import { HeartPulse, LayoutDashboard, Sprout, BarChart3, ScrollText } from 'lucide-react';
 
 import {
   Sidebar,
@@ -41,6 +41,11 @@ export function SidebarNav() {
       label: t('dataVisualization'),
       icon: BarChart3,
     },
+    {
+      href: '/schemes',
+      label: t('governmentSchemes'),
+      icon: ScrollText,
+    }
   ];
 
   return (

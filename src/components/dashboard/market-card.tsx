@@ -42,7 +42,7 @@ export function MarketCard() {
         <div className="flex-grow" />
         <Button asChild variant="ghost" className="mt-4 self-end text-sm text-primary hover:text-primary/90">
           <Link href="/data-visualization">
-            View Details
+            {t('learnMore')}
             <ChevronRight className="h-4 w-4 ml-1" />
           </Link>
         </Button>

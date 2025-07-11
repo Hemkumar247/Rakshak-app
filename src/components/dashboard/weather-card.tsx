@@ -29,7 +29,8 @@ export function WeatherCard() {
         <CardDescription>{t('currentTemp')}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col flex-grow">
-        <Separator className="my-4" />
+        <div className="text-4xl font-bold text-center py-2">28°C</div>
+        <Separator className="my-2" />
         <div className="flex justify-between text-center">
           {forecast.map(({ day, Icon, temp }) => (
             <div key={day} className="flex flex-col items-center gap-2">
@@ -42,7 +43,7 @@ export function WeatherCard() {
         <div className="flex-grow" />
         <Button asChild variant="ghost" className="mt-4 self-end text-sm text-primary hover:text-primary/90">
           <Link href="/data-visualization">
-            View Details
+            {t('learnMore')}
             <ChevronRight className="h-4 w-4 ml-1" />
           </Link>
         </Button>

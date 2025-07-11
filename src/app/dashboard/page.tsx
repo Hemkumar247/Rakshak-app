@@ -4,6 +4,7 @@ import { useLanguage } from '@/lib/i18n';
 import { WeatherCard } from '@/components/dashboard/weather-card';
 import { MarketCard } from '@/components/dashboard/market-card';
 import { GeoCard } from '@/components/dashboard/geo-card';
+import { GovernmentSchemesCard } from '@/components/dashboard/government-schemes-card';
 
 export default function Dashboard() {
   const { t } = useLanguage();
@@ -16,10 +17,11 @@ export default function Dashboard() {
         </h1>
         <p className="text-muted-foreground">{t('dashboardDescription')}</p>
       </div>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <WeatherCard />
         <MarketCard />
         <GeoCard />
+        <GovernmentSchemesCard />
       </div>
     </div>
   );

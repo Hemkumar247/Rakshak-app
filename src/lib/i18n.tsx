@@ -13,6 +13,8 @@ const translations = {
     noInfo: 'No information provided.',
     errorTitle: 'Error',
     errorDescription: 'Something went wrong. Please try again.',
+    learnMore: 'Learn More',
+    eligibility: 'Eligibility',
 
 
     // Sidebar
@@ -20,6 +22,7 @@ const translations = {
     cropSuggestions: 'Crop Suggestions',
     plantDiagnosis: 'Plant Diagnosis',
     dataVisualization: 'Data Visualization',
+    governmentSchemes: 'Govt. Schemes',
 
     // Dashboard
     welcome: 'Welcome, Farmer!',
@@ -30,6 +33,7 @@ const translations = {
     currentTemp: 'Current: 28°C, Sunny',
     soilPh: 'Soil pH',
     elevation: 'Elevation',
+    schemesDescription: 'Benefits & subsidies for you',
 
     // Crop Suggestions
     cropSuggestionsTitle: 'Smart Crop Suggestions',
@@ -67,6 +71,9 @@ const translations = {
     soilComposition: 'Soil Composition',
     marketTrendsChart: 'Market Trends (Price/Quintal)',
 
+    // Schemes
+    schemesPageDescription: 'Explore government schemes and subsidies available for farmers.',
+
   },
   hi: {
     // General
@@ -76,12 +83,15 @@ const translations = {
     noInfo: 'कोई जानकारी नहीं दी गई।',
     errorTitle: 'त्रुटि',
     errorDescription: 'कुछ गलत हो गया। कृपया पुन प्रयास करें।',
+    learnMore: 'और जानें',
+    eligibility: 'पात्रता',
     
     // Sidebar
     dashboard: 'डैशबोर्ड',
     cropSuggestions: 'फसल सुझाव',
     plantDiagnosis: 'पौधों का निदान',
     dataVisualization: 'डेटा विज़ुअलाइज़ेशन',
+    governmentSchemes: 'सरकारी योजनाएं',
 
     // Dashboard
     welcome: 'किसान, आपका स्वागत है!',
@@ -92,6 +102,7 @@ const translations = {
     currentTemp: 'वर्तमान: 28°C, धूप',
     soilPh: 'मिट्टी का पीएच',
     elevation: 'ऊंचाई',
+    schemesDescription: 'आपके लिए लाभ और सब्सिडी',
     
     // Crop Suggestions
     cropSuggestionsTitle: 'स्मार्ट फसल सुझाव',
@@ -128,6 +139,9 @@ const translations = {
     weatherHistory: 'मौसम का इतिहास',
     soilComposition: 'मिट्टी की संरचना',
     marketTrendsChart: 'बाजार के रुझान (मूल्य/क्विंटल)',
+    
+    // Schemes
+    schemesPageDescription: 'किसानों के लिए उपलब्ध सरकारी योजनाओं और सब्सिडी का अन्वेषण करें।',
   },
   ta: {
     // General
@@ -137,12 +151,15 @@ const translations = {
     noInfo: 'தகவல் எதுவும் வழங்கப்படவில்லை.',
     errorTitle: 'பிழை',
     errorDescription: 'ஏதோ தவறு நடந்துவிட்டது. மீண்டும் முயற்சிக்கவும்.',
+    learnMore: 'மேலும் அறிக',
+    eligibility: 'தகுதி',
     
     // Sidebar
     dashboard: 'டாஷ்போர்டு',
     cropSuggestions: 'பயிர் பரிந்துரைகள்',
     plantDiagnosis: 'தாவர நோய் கண்டறிதல்',
     dataVisualization: 'தரவு காட்சிப்படுத்தல்',
+    governmentSchemes: 'அரசு திட்டங்கள்',
 
     // Dashboard
     welcome: 'விவசாயி, வருக!',
@@ -153,6 +170,7 @@ const translations = {
     currentTemp: 'தற்போதைய: 28°C, வெயில்',
     soilPh: 'மண் pH',
     elevation: 'உயரம்',
+    schemesDescription: 'உங்களுக்கான நன்மைகள் மற்றும் மானியங்கள்',
     
     // Crop Suggestions
     cropSuggestionsTitle: 'ஸ்மார்ட் பயிர் பரிந்துரைகள்',
@@ -189,6 +207,9 @@ const translations = {
     weatherHistory: 'வானிலை வரலாறு',
     soilComposition: 'மண் கலவை',
     marketTrendsChart: 'சந்தை போக்குகள் (விலை/குவிண்டால்)',
+    
+    // Schemes
+    schemesPageDescription: 'விவசாயிகளுக்கு கிடைக்கும் அரசாங்க திட்டங்கள் மற்றும் மானியங்களை ஆராயுங்கள்.',
   },
 };
 
@@ -210,8 +231,8 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
   }, []);
 
   const t = useMemo(() => (key: keyof typeof translations.en) => {
-    if (!isMounted) return translations.en[key];
-    return translations[language][key] || translations.en[key];
+    if (!isMounted) return translations.en[key]; // Fallback for SSR
+    return translations[language]?.[key] || translations.en[key];
   }, [language, isMounted]);
 
   const value = { language, setLanguage, t, isMounted };
