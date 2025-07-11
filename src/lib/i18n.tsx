@@ -23,14 +23,15 @@ const translations = {
     plantDiagnosis: 'Plant Diagnosis',
     dataVisualization: 'Data Visualization',
     governmentSchemes: 'Govt. Schemes',
+    weather: 'Weather Forecast',
 
     // Dashboard
     welcome: 'Welcome, Farmer!',
     dashboardDescription: 'Here is an overview of your farm\'s current status.',
-    weather: 'Real-Time Weather',
+    // weather: 'Real-Time Weather', // This key is now used in sidebar
     marketFactors: 'Market Factors',
     geographicalConditions: 'Geographical Conditions',
-    currentTemp: 'Current: 28°C, Sunny',
+    currentTemp: 'Current: 22°C, Sunny',
     soilPh: 'Soil pH',
     elevation: 'Elevation',
     schemesDescription: 'Benefits & subsidies for you',
@@ -73,6 +74,17 @@ const translations = {
 
     // Schemes
     schemesPageDescription: 'Explore government schemes and subsidies available for farmers.',
+    
+    // Weather Page
+    weatherForecastTitle: '7-Day Farming Forecast',
+    weatherForecastDescription: 'Detailed weather information to help you plan your week.',
+    currentConditions: 'Current Conditions',
+    temperature: 'Temperature',
+    humidity: 'Humidity',
+    windSpeed: 'Wind Speed',
+    visibility: 'Visibility',
+    sevenDayForecast: '7-Day Farming Forecast',
+    rainChance: 'Rain Chance',
 
   },
   hi: {
@@ -92,14 +104,14 @@ const translations = {
     plantDiagnosis: 'पौधों का निदान',
     dataVisualization: 'डेटा विज़ुअलाइज़ेशन',
     governmentSchemes: 'सरकारी योजनाएं',
+    weather: 'मौसम पूर्वानुमान',
 
     // Dashboard
     welcome: 'किसान, आपका स्वागत है!',
     dashboardDescription: 'यहां आपके खेत की वर्तमान स्थिति का अवलोकन है।',
-    weather: 'वास्तविक समय का मौसम',
     marketFactors: 'बाजार कारक',
     geographicalConditions: 'भौगोलिक स्थितियाँ',
-    currentTemp: 'वर्तमान: 28°C, धूप',
+    currentTemp: 'वर्तमान: 22°C, धूप',
     soilPh: 'मिट्टी का पीएच',
     elevation: 'ऊंचाई',
     schemesDescription: 'आपके लिए लाभ और सब्सिडी',
@@ -142,6 +154,18 @@ const translations = {
     
     // Schemes
     schemesPageDescription: 'किसानों के लिए उपलब्ध सरकारी योजनाओं और सब्सिडी का अन्वेषण करें।',
+
+    // Weather Page
+    weatherForecastTitle: '7-दिवसीय कृषि पूर्वानुमान',
+    weatherForecastDescription: 'आपके सप्ताह की योजना बनाने में मदद करने के लिए विस्तृत मौसम जानकारी।',
+    currentConditions: 'वर्तमान स्थितियाँ',
+    temperature: 'तापमान',
+    humidity: 'आर्द्रता',
+    windSpeed: 'हवा की गति',
+    visibility: 'दृश्यता',
+    sevenDayForecast: '7-दिवसीय कृषि पूर्वानुमान',
+    rainChance: 'बारिश की संभावना',
+
   },
   ta: {
     // General
@@ -160,14 +184,14 @@ const translations = {
     plantDiagnosis: 'தாவர நோய் கண்டறிதல்',
     dataVisualization: 'தரவு காட்சிப்படுத்தல்',
     governmentSchemes: 'அரசு திட்டங்கள்',
+    weather: 'வானிலை முன்னறிவிப்பு',
 
     // Dashboard
     welcome: 'விவசாயி, வருக!',
     dashboardDescription: 'உங்கள் பண்ணையின் தற்போதைய நிலையின் கண்ணோட்டம் இங்கே.',
-    weather: 'நிகழ்நேர வானிலை',
     marketFactors: 'சந்தை காரணிகள்',
     geographicalConditions: 'புவியியல் நிலைமைகள்',
-    currentTemp: 'தற்போதைய: 28°C, வெயில்',
+    currentTemp: 'தற்போதைய: 22°C, வெயில்',
     soilPh: 'மண் pH',
     elevation: 'உயரம்',
     schemesDescription: 'உங்களுக்கான நன்மைகள் மற்றும் மானியங்கள்',
@@ -210,6 +234,18 @@ const translations = {
     
     // Schemes
     schemesPageDescription: 'விவசாயிகளுக்கு கிடைக்கும் அரசாங்க திட்டங்கள் மற்றும் மானியங்களை ஆராயுங்கள்.',
+
+    // Weather Page
+    weatherForecastTitle: '7-நாள் விவசாய முன்னறிவிப்பு',
+    weatherForecastDescription: 'உங்கள் வாரத்தைத் திட்டமிட உதவும் விரிவான வானிலை தகவல்.',
+    currentConditions: 'தற்போதைய நிலைமைகள்',
+    temperature: 'வெப்பநிலை',
+    humidity: 'ஈரப்பதம்',
+    windSpeed: 'காற்றின் வேகம்',
+    visibility: 'பார்வைநிலை',
+    sevenDayForecast: '7-நாள் விவசாய முன்னறிவிப்பு',
+    rainChance: 'மழை வாய்ப்பு',
+
   },
 };
 
@@ -228,6 +264,7 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
 
   useEffect(() => {
     setIsMounted(true);
+    // You can add logic here to persist language preference, e.g., in localStorage
   }, []);
 
   const t = useMemo(() => (key: keyof typeof translations.en) => {
