@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Bot, Loader2, CheckCircle } from 'lucide-react';
+import { Bot, Loader2, CheckCircle, MapPin } from 'lucide-react';
 import Image from 'next/image';
 
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getSmartCropSuggestions } from './actions';
 import { useLanguage } from '@/lib/i18n';
 import type { SmartCropSuggestionsOutput } from '@/ai/flows/smart-crop-suggestions';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   farmLocation: z.string().min(2, "Farm location is required."),
@@ -31,8 +32,10 @@ type Recommendation = SmartCropSuggestionsOutput['recommendations'][0];
 
 export default function CropSuggestionsPage() {
   const { t, language } = useLanguage();
+  const { toast } = useToast();
   const [recommendations, setRecommendations] = useState<Recommendation[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,9 +52,55 @@ export default function CropSuggestionsPage() {
       setRecommendations(result.recommendations);
     } catch (error) {
       console.error("Failed to get crop suggestions:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to get crop suggestions. Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function handleGetLocation() {
+    if (!navigator.geolocation) {
+      toast({
+        variant: "destructive",
+        title: "Geolocation Not Supported",
+        description: "Your browser does not support geolocation.",
+      });
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const locationString = `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)}`;
+        form.setValue('farmLocation', locationString, { shouldValidate: true });
+        setIsLocating(false);
+        toast({
+            title: "Location Found",
+            description: "Your location has been filled in.",
+        })
+      },
+      (error) => {
+        setIsLocating(false);
+        let description = "An unknown error occurred.";
+        if (error.code === error.PERMISSION_DENIED) {
+            description = "You denied the request for Geolocation.";
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+            description = "Location information is unavailable.";
+        } else if (error.code === error.TIMEOUT) {
+            description = "The request to get user location timed out.";
+        }
+        toast({
+          variant: "destructive",
+          title: "Error Getting Location",
+          description,
+        });
+      }
+    );
   }
 
   return (
@@ -77,9 +126,15 @@ export default function CropSuggestionsPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('farmLocation')}</FormLabel>
-                      <FormControl>
-                        <Input placeholder={t('farmLocationPlaceholder')} {...field} />
-                      </FormControl>
+                      <div className="flex gap-2">
+                        <FormControl>
+                          <Input placeholder={t('farmLocationPlaceholder')} {...field} />
+                        </FormControl>
+                        <Button type="button" variant="outline" onClick={handleGetLocation} disabled={isLocating}>
+                            {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
+                            <span className="sr-only">Use My Location</span>
+                        </Button>
+                      </div>
                       <FormDescription>
                         The AI will analyze the location and current season for the best recommendations.
                       </FormDescription>
@@ -138,7 +193,7 @@ export default function CropSuggestionsPage() {
             <div className="flex flex-col items-center justify-center h-96 text-center bg-card rounded-lg shadow-lg border-white/40">
               <Bot className="h-16 w-16 text-muted-foreground/50 mb-4" />
               <p className="text-muted-foreground text-lg">Your crop recommendations will appear here.</p>
-              <p className="text-muted-foreground/80">Enter a location to get started.</p>
+              <p className="text-muted-foreground/80">Enter a location or use your current one to get started.</p>
             </div>
           )}
         </div>
