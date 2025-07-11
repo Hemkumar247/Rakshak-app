@@ -23,6 +23,8 @@ const prompt = ai.definePrompt({
   name: 'weatherBasedFarmTipPrompt',
   input: {schema: WeatherBasedFarmTipInputSchema},
   output: {schema: WeatherBasedFarmTipOutputSchema},
+  // Explicitly use the 'gemma' model defined in genkit.ts for this prompt.
+  model: 'gemma', 
   prompt: `You are an expert agronomist providing helpful advice to farmers. Based on the following weather forecast for a single day, provide one short, actionable, and encouraging farming tip. The tip should be very concise and easy to understand.
 
   Keep the tip to a single sentence.
