@@ -6,7 +6,6 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/com
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { AlertTriangle } from "lucide-react";
 
 export default function SettingsPage() {
   const { t } = useLanguage();
