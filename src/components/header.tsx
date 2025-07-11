@@ -1,5 +1,7 @@
+
 "use client";
 
+import Link from 'next/link';
 import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
@@ -12,8 +14,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { User } from 'lucide-react';
 
 export function Header() {
   return (
@@ -24,21 +26,25 @@ export function Header() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
             className="overflow-hidden rounded-full"
           >
-            <Avatar>
-              <AvatarImage src="https://placehold.co/32x32.png" alt="User Avatar" data-ai-hint="avatar man" />
-              <AvatarFallback>U</AvatarFallback>
-            </Avatar>
+            <User className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Settings</DropdownMenuItem>
-          <DropdownMenuItem>Support</DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/profile">Profile</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/settings">Settings</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/support">Support</Link>
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>Logout</DropdownMenuItem>
         </DropdownMenuContent>

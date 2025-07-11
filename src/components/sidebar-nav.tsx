@@ -1,8 +1,9 @@
+
 "use client";
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { HeartPulse, LayoutDashboard, Sprout, BarChart3, ScrollText, Sun } from 'lucide-react';
+import { HeartPulse, LayoutDashboard, Sprout, BarChart3, ScrollText, Sun, User } from 'lucide-react';
 
 import {
   Sidebar,
@@ -50,6 +51,11 @@ export function SidebarNav() {
       href: '/schemes',
       label: t('governmentSchemes'),
       icon: ScrollText,
+    },
+    {
+      href: '/profile',
+      label: t('profile'),
+      icon: User,
     }
   ];
 

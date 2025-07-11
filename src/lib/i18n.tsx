@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useState, useContext, useMemo, useEffect } from 'react';
@@ -15,6 +16,14 @@ const translations = {
     errorDescription: 'Something went wrong. Please try again.',
     learnMore: 'Learn More',
     eligibility: 'Eligibility',
+    name: 'Name',
+    email: 'Email',
+    saveChanges: 'Save Changes',
+    subject: 'Subject',
+    message: 'Message',
+    sendMessage: 'Send Message',
+    subjectPlaceholder: 'How can we help?',
+    messagePlaceholder: 'Describe your issue or question here.',
 
 
     // Sidebar
@@ -24,6 +33,9 @@ const translations = {
     dataVisualization: 'Data Visualization',
     governmentSchemes: 'Govt. Schemes',
     weather: 'Weather Forecast',
+    profile: 'Profile',
+    settings: 'Settings',
+    support: 'Support',
 
     // Dashboard
     welcome: 'Welcome, Farmer!',
@@ -86,6 +98,26 @@ const translations = {
     sevenDayForecast: '7-Day Farming Forecast',
     rainChance: 'Rain Chance',
 
+    // Profile Page
+    profileDescription: 'View and edit your personal information.',
+    profileDetails: 'Profile Details',
+    profileDetailsDescription: 'This information will be used to personalize your experience.',
+
+    // Settings Page
+    settingsDescription: 'Manage your application preferences.',
+    languageSettings: 'Language',
+    languageSettingsDescription: 'Choose the language for the application interface.',
+    selectLanguage: 'Select Language',
+    notificationSettings: 'Notifications',
+    notificationSettingsDescription: 'Control how you receive alerts and updates.',
+    emailNotifications: 'Email Notifications',
+    pushNotifications: 'Push Notifications',
+
+    // Support Page
+    supportDescription: 'Need help? Contact us.',
+    contactSupport: 'Contact Support',
+    contactSupportDescription: "Fill out the form below and we'll get back to you as soon as possible.",
+
   },
   hi: {
     // General
@@ -97,7 +129,15 @@ const translations = {
     errorDescription: 'कुछ गलत हो गया। कृपया पुन प्रयास करें।',
     learnMore: 'और जानें',
     eligibility: 'पात्रता',
-    
+    name: 'नाम',
+    email: 'ईमेल',
+    saveChanges: 'बदलाव सहेजें',
+    subject: 'विषय',
+    message: 'संदेश',
+    sendMessage: 'संदेश भेजें',
+    subjectPlaceholder: 'हम आपकी मदद कैसे कर सकते हैं?',
+    messagePlaceholder: 'अपनी समस्या या प्रश्न का यहाँ वर्णन करें।',
+
     // Sidebar
     dashboard: 'डैशबोर्ड',
     cropSuggestions: 'फसल सुझाव',
@@ -105,6 +145,9 @@ const translations = {
     dataVisualization: 'डेटा विज़ुअलाइज़ेशन',
     governmentSchemes: 'सरकारी योजनाएं',
     weather: 'मौसम पूर्वानुमान',
+    profile: 'प्रोफ़ाइल',
+    settings: 'सेटिंग्स',
+    support: 'सहायता',
 
     // Dashboard
     welcome: 'किसान, आपका स्वागत है!',
@@ -166,6 +209,26 @@ const translations = {
     sevenDayForecast: '7-दिवसीय कृषि पूर्वानुमान',
     rainChance: 'बारिश की संभावना',
 
+    // Profile Page
+    profileDescription: 'अपनी व्यक्तिगत जानकारी देखें और संपादित करें।',
+    profileDetails: 'प्रोफ़ाइल विवरण',
+    profileDetailsDescription: 'यह जानकारी आपके अनुभव को वैयक्तिकृत करने के लिए उपयोग की जाएगी।',
+
+    // Settings Page
+    settingsDescription: 'अपनी एप्लिकेशन प्राथमिकताएं प्रबंधित करें।',
+    languageSettings: 'भाषा',
+    languageSettingsDescription: 'एप्लिकेशन इंटरफ़ेस के लिए भाषा चुनें।',
+    selectLanguage: 'भाषा चुनें',
+    notificationSettings: 'सूचनाएं',
+    notificationSettingsDescription: 'आप अलर्ट और अपडेट कैसे प्राप्त करते हैं इसे नियंत्रित करें।',
+    emailNotifications: 'ईमेल सूचनाएं',
+    pushNotifications: 'पुश सूचनाएं',
+
+    // Support Page
+    supportDescription: 'मदद चाहिए? हमसे संपर्क करें।',
+    contactSupport: 'सहायता से संपर्क करें',
+    contactSupportDescription: 'नीचे दिया गया फ़ॉर्म भरें और हम जल्द से जल्द आपसे संपर्क करेंगे।',
+
   },
   ta: {
     // General
@@ -177,7 +240,15 @@ const translations = {
     errorDescription: 'ஏதோ தவறு நடந்துவிட்டது. மீண்டும் முயற்சிக்கவும்.',
     learnMore: 'மேலும் அறிக',
     eligibility: 'தகுதி',
-    
+    name: 'பெயர்',
+    email: 'மின்னஞ்சல்',
+    saveChanges: 'மாற்றங்களைச் சேமி',
+    subject: 'பொருள்',
+    message: 'செய்தி',
+    sendMessage: 'செய்தி அனுப்பு',
+    subjectPlaceholder: 'நாங்கள் எப்படி உதவ முடியும்?',
+    messagePlaceholder: 'உங்கள் சிக்கல் அல்லது கேள்வியை இங்கே விவரிக்கவும்.',
+
     // Sidebar
     dashboard: 'டாஷ்போர்டு',
     cropSuggestions: 'பயிர் பரிந்துரைகள்',
@@ -185,6 +256,9 @@ const translations = {
     dataVisualization: 'தரவு காட்சிப்படுத்தல்',
     governmentSchemes: 'அரசு திட்டங்கள்',
     weather: 'வானிலை முன்னறிவிப்பு',
+    profile: 'சுயவிவரம்',
+    settings: 'அமைப்புகள்',
+    support: 'ஆதரவு',
 
     // Dashboard
     welcome: 'விவசாயி, வருக!',
@@ -245,6 +319,26 @@ const translations = {
     visibility: 'பார்வைநிலை',
     sevenDayForecast: '7-நாள் விவசாய முன்னறிவிப்பு',
     rainChance: 'மழை வாய்ப்பு',
+
+    // Profile Page
+    profileDescription: 'உங்கள் தனிப்பட்ட தகவல்களைக் கண்டு திருத்தவும்.',
+    profileDetails: 'சுயவிவர விவரங்கள்',
+    profileDetailsDescription: 'உங்கள் அனுபவத்தைத் தனிப்பயனாக்க இந்தத் தகவல் பயன்படுத்தப்படும்.',
+
+    // Settings Page
+    settingsDescription: 'உங்கள் பயன்பாட்டு விருப்பத்தேர்வுகளை நிர்வகிக்கவும்.',
+    languageSettings: 'மொழி',
+    languageSettingsDescription: 'பயன்பாட்டு இடைமுகத்திற்கான மொழியைத் தேர்ந்தெடுக்கவும்.',
+    selectLanguage: 'மொழியைத் தேர்ந்தெடுக்கவும்',
+    notificationSettings: 'அறிவிப்புகள்',
+    notificationSettingsDescription: 'விழிப்பூட்டல்களையும் புதுப்பிப்புகளையும் எவ்வாறு பெறுகிறீர்கள் என்பதைக் கட்டுப்படுத்தவும்.',
+    emailNotifications: 'மின்னஞ்சல் அறிவிப்புகள்',
+    pushNotifications: 'புஷ் அறிவிப்புகள்',
+
+    // Support Page
+    supportDescription: 'உதவி வேண்டுமா? எங்களைத் தொடர்பு கொள்ளவும்.',
+    contactSupport: 'ஆதரவைத் தொடர்பு கொள்ளவும்',
+    contactSupportDescription: 'கீழேயுள்ள படிவத்தை நிரப்பவும், நாங்கள் விரைவில் உங்களைத் தொடர்புகொள்வோம்.',
 
   },
 };
