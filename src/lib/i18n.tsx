@@ -112,6 +112,8 @@ const translations = {
     notificationSettingsDescription: 'Control how you receive alerts and updates.',
     emailNotifications: 'Email Notifications',
     pushNotifications: 'Push Notifications',
+    earlyWarningSystem: 'Early Warning System',
+    earlyWarningSystemDescription: 'Receive critical alerts for government warnings and natural disasters.',
 
     // Support Page
     supportDescription: 'Need help? Contact us.',
@@ -223,6 +225,8 @@ const translations = {
     notificationSettingsDescription: 'आप अलर्ट और अपडेट कैसे प्राप्त करते हैं इसे नियंत्रित करें।',
     emailNotifications: 'ईमेल सूचनाएं',
     pushNotifications: 'पुश सूचनाएं',
+    earlyWarningSystem: 'प्रारंभिक चेतावनी प्रणाली',
+    earlyWarningSystemDescription: 'सरकारी चेतावनियों और प्राकृतिक आपदाओं के लिए महत्वपूर्ण अलर्ट प्राप्त करें।',
 
     // Support Page
     supportDescription: 'मदद चाहिए? हमसे संपर्क करें।',
@@ -334,6 +338,8 @@ const translations = {
     notificationSettingsDescription: 'விழிப்பூட்டல்களையும் புதுப்பிப்புகளையும் எவ்வாறு பெறுகிறீர்கள் என்பதைக் கட்டுப்படுத்தவும்.',
     emailNotifications: 'மின்னஞ்சல் அறிவிப்புகள்',
     pushNotifications: 'புஷ் அறிவிப்புகள்',
+    earlyWarningSystem: 'ஆரம்ப எச்சரிக்கை அமைப்பு',
+    earlyWarningSystemDescription: 'அரசாங்க எச்சரிக்கைகள் மற்றும் இயற்கை பேரழிவுகளுக்கான முக்கியமான விழிப்பூட்டல்களைப் பெறுங்கள்.',
 
     // Support Page
     supportDescription: 'உதவி வேண்டுமா? எங்களைத் தொடர்பு கொள்ளவும்.',
