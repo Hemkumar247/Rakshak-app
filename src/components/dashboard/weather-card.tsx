@@ -26,7 +26,7 @@ export function WeatherCard() {
           <Sun className="text-accent" />
           {t('weather')}
         </CardTitle>
-        <CardDescription>{t('currentTemp')}</CardDescription>
+        <CardDescription>Sample 5-day forecast</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col flex-grow">
         <div className="text-4xl font-bold text-center py-2">22°C</div>
