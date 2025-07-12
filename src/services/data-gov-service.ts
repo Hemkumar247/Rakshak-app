@@ -4,9 +4,6 @@
 
 'use server';
 
-import { ai } from '@/ai/genkit';
-import { z } from 'zod';
-
 export interface PriceData {
     day: string; // e.g., 'Today', 'Tomorrow', 'Yesterday'
     price: number; // Price per quintal

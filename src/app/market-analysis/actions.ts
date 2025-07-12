@@ -10,36 +10,22 @@ export interface MarketPriceData {
     priceData: PriceData[];
 }
 
-// Default to a major market if only state is provided.
-const stateToDefaultMarket: Record<string, string> = {
-    "Maharashtra": "Pune",
-    "Uttar Pradesh": "Lucknow",
-    "Karnataka": "Bangalore",
-    "Tamil Nadu": "Chennai",
-    "Andhra Pradesh": "Hyderabad",
-    "Gujarat": "Ahmedabad",
-    // Add more states and default markets as needed
-};
-
-export async function getMarketPrices(commodity: string, state: string, market?: string): Promise<MarketPriceData> {
-  
-  const targetMarket = market || stateToDefaultMarket[state] || state; // Fallback to state name if no default market found
-
-  if (!targetMarket) {
-    throw new Error(`Could not determine a market for the state: ${state}. Please specify one.`);
+export async function getMarketPrices(commodity: string, state: string, market: string): Promise<MarketPriceData> {
+  if (!commodity || !state || !market) {
+    throw new Error("Commodity, State, and Market are required.");
   }
   
   try {
-    const prices = await getCommodityPriceData({ commodity, state, market: targetMarket });
+    const prices = await getCommodityPriceData({ commodity, state, market });
     
     if (prices.length === 0) {
-        throw new Error(`No market data found for ${commodity} in ${targetMarket}, ${state}. Please check your inputs or try a different location.`);
+        throw new Error(`No market data found for ${commodity} in ${market}, ${state}. Please check your inputs or try a different location.`);
     }
     
     return {
         commodity,
         state,
-        market: targetMarket,
+        market,
         priceData: prices
     };
   } catch (error) {

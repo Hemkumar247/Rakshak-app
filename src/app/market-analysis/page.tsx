@@ -27,6 +27,7 @@ import type { MarketPriceData } from './actions';
 const formSchema = z.object({
   commodity: z.string().min(2, "Crop name is required."),
   state: z.string().min(2, "State is required."),
+  market: z.string().min(2, "Market name is required."),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -43,6 +44,7 @@ export default function MarketAnalysisPage() {
     defaultValues: {
       commodity: "",
       state: "",
+      market: "",
     },
   });
 
@@ -50,7 +52,7 @@ export default function MarketAnalysisPage() {
     setIsLoading(true);
     setPriceData(null);
     try {
-      const result = await getMarketPrices(values.commodity, values.state);
+      const result = await getMarketPrices(values.commodity, values.state, values.market);
       setPriceData(result);
     } catch (error) {
       console.error("Failed to get market prices:", error);
@@ -87,8 +89,7 @@ export default function MarketAnalysisPage() {
           if (!response.ok) throw new Error("Failed to fetch address");
           const data = await response.json();
           const state = data.address.state;
-          const market = data.address.city || data.address.town || data.address.village;
-
+          
           if (!state) {
             throw new Error("Could not determine state from your location.");
           }
@@ -97,19 +98,8 @@ export default function MarketAnalysisPage() {
           
           toast({
             title: "Location Found",
-            description: "Your state has been filled in.",
+            description: "Your state has been filled in. Please enter your local market.",
           });
-
-          // If a crop is already entered, trigger a search
-          const currentCommodity = form.getValues('commodity');
-          if (currentCommodity && market) {
-            setIsLoading(true);
-            setPriceData(null);
-            const result = await getMarketPrices(currentCommodity, state, market);
-            setPriceData(result);
-            setIsLoading(false);
-          }
-
         } catch (e) {
             console.error("Reverse geocoding failed", e);
             toast({
@@ -186,6 +176,19 @@ export default function MarketAnalysisPage() {
                             {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
                         </Button>
                       </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="market"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Market</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Pune" {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
