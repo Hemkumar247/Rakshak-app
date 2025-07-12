@@ -1,14 +1,42 @@
 // src/app/market-analysis/actions.ts
 "use server";
 
-import { getCommodityPriceData, type PriceData } from "@/services/data-gov-service";
+import { getCommodityPriceData, getDistinctStates, getMarketsForState, type PriceData } from "@/services/data-gov-service";
 
 export interface MarketPriceData {
     commodity: string;
     state: string;
     market: string;
-    priceData: PriceData[];
+    minPrice: number;
+    maxPrice: number;
+    arrivalDate: string;
 }
+
+export interface MarketMetadata {
+    [state: string]: string[];
+}
+
+export async function fetchStates(): Promise<string[]> {
+    try {
+        const states = await getDistinctStates();
+        return states;
+    } catch (error) {
+        console.error("Error fetching states:", error);
+        throw new Error("Failed to fetch states from data.gov.in");
+    }
+}
+
+export async function fetchMarkets(state: string): Promise<string[]> {
+    if (!state) return [];
+    try {
+        const markets = await getMarketsForState(state);
+        return markets;
+    } catch (error) {
+        console.error(`Error fetching markets for state ${state}:`, error);
+        throw new Error(`Failed to fetch markets for state ${state}`);
+    }
+}
+
 
 export async function getMarketPrices(commodity: string, state: string, market: string): Promise<MarketPriceData> {
   if (!commodity || !state || !market) {
@@ -22,11 +50,16 @@ export async function getMarketPrices(commodity: string, state: string, market: 
         throw new Error(`No market data found for ${commodity} in ${market}, ${state}. Please check your inputs or try a different location.`);
     }
     
+    // Get the latest record
+    const latestRecord = prices[prices.length - 1];
+
     return {
         commodity,
         state,
         market,
-        priceData: prices
+        minPrice: latestRecord.min_price,
+        maxPrice: latestRecord.max_price,
+        arrivalDate: latestRecord.arrival_date,
     };
   } catch (error) {
     console.error("Error in getMarketPrices action:", error);

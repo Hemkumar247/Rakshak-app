@@ -5,8 +5,10 @@
 'use server';
 
 export interface PriceData {
-    day: string; // e.g., 'Today', 'Tomorrow', 'Yesterday'
-    price: number; // Price per quintal
+    arrival_date: string;
+    min_price: number;
+    max_price: number;
+    modal_price: number;
 }
 
 interface CommodityPriceInput {
@@ -27,53 +29,75 @@ interface DataGovRecord {
     modal_price: string;
 }
 
-// Note: This is now just a direct function call, not a Genkit tool.
-export async function getCommodityPriceData(input: CommodityPriceInput): Promise<PriceData[]> {
-    const { commodity, state, market } = input;
+const BASE_URL = 'https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070';
+
+async function fetchData(params: URLSearchParams) {
     const apiKey = process.env.DATA_GOV_IN_API_KEY;
     if (!apiKey) {
       throw new Error("data.gov.in API key is not configured.");
     }
-  
-    const url = new URL('https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070');
-    url.searchParams.append('api-key', apiKey);
-    url.searchParams.append('format', 'json');
-    url.searchParams.append('limit', '5'); // Get the last 5 entries for a simple trend
-    // The API seems to work better with broader filters.
-    // We will filter by state and commodity, and then manually filter by market if needed.
-    url.searchParams.append('filters[state]', state);
-    url.searchParams.append('filters[commodity]', commodity);
-    // It's often better to let the client-side filter by market if the API is inconsistent with it.
-    // For now, we will filter by market on the API side.
-    url.searchParams.append('filters[market]', market);
+    params.append('api-key', apiKey);
+    params.append('format', 'json');
 
-    // Sort by arrival date descending to get the most recent data
-    url.searchParams.append('sort[arrival_date]', 'desc');
-  
+    const url = `${BASE_URL}?${params.toString()}`;
+    
     try {
-      const response = await fetch(url.toString());
-      if (!response.ok) {
-        throw new Error(`API request failed with status: ${response.status}`);
-      }
-      const data = await response.json();
-  
-      if (!data.records || data.records.length === 0) {
-        return [];
-      }
-  
-      // The API returns records sorted descending, so we reverse to get chronological order for charting
-      const priceData = data.records.reverse().map((record: DataGovRecord) => {
-        const date = new Date(record.arrival_date.split('/').reverse().join('-'));
-        const dayLabel = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(date);
-        return {
-          day: dayLabel,
-          price: parseFloat(record.modal_price)
-        };
-      });
-  
-      return priceData;
+        const response = await fetch(url);
+        if (!response.ok) {
+            console.error("data.gov.in API Error Response:", await response.text());
+            throw new Error(`API request failed with status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.records;
     } catch (error) {
-      console.error("Failed to fetch market data from data.gov.in:", error);
-      throw new Error("Could not fetch live market data.");
+        console.error("Failed to fetch from data.gov.in:", error);
+        throw new Error("Could not fetch live market data.");
     }
+}
+
+
+export async function getDistinctStates(): Promise<string[]> {
+    const params = new URLSearchParams();
+    params.append('fields', 'state');
+    params.append('limit', '1000'); // Assuming there are fewer than 1000 state entries
+    const records = await fetchData(params);
+    const states = [...new Set<string>(records.map((r: { state: string }) => r.state))];
+    return states.sort();
+}
+
+export async function getMarketsForState(state: string): Promise<string[]> {
+    const params = new URLSearchParams();
+    params.append('fields', 'market');
+    params.append('filters[state]', state);
+    params.append('limit', '1000'); // Assuming fewer than 1000 markets per state
+    const records = await fetchData(params);
+    const markets = [...new Set<string>(records.map((r: { market: string }) => r.market))];
+    return markets.sort();
+}
+
+export async function getCommodityPriceData(input: CommodityPriceInput): Promise<PriceData[]> {
+    const { commodity, state, market } = input;
+    
+    const params = new URLSearchParams();
+    params.append('filters[state]', state);
+    params.append('filters[market]', market);
+    params.append('filters[commodity]', commodity);
+    params.append('sort[arrival_date]', 'desc');
+    params.append('limit', '10'); // Fetch last 10 records for a trend
+
+    const records: DataGovRecord[] = await fetchData(params);
+
+    if (!records || records.length === 0) {
+        return [];
+    }
+  
+    // The API returns records sorted descending, so we reverse to get chronological order for charting
+    const priceData = records.map((record: DataGovRecord) => ({
+        arrival_date: record.arrival_date,
+        min_price: parseFloat(record.min_price),
+        max_price: parseFloat(record.max_price),
+        modal_price: parseFloat(record.modal_price)
+    })).reverse();
+  
+    return priceData;
 }
