@@ -18,6 +18,8 @@ export async function getMarketCardData(): Promise<MarketCardDataItem[]> {
     { crop: 'Potato', change: -0.8, status: 'down' },
     { crop: 'Onion', change: 2.1, status: 'up' },
     { crop: 'Tomato', change: -0.2, status: 'down' },
+    { crop: 'Soybean', change: 0.5, status: 'up' },
+    { crop: 'Cotton', change: -1.2, status: 'down' },
   ];
 
   // Simulate network delay
