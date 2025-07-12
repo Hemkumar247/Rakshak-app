@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { createContext, useState, useContext, useMemo, useEffect } from 'react';
@@ -398,7 +397,7 @@ const translations = {
     humidity: 'ஈரப்பதம்',
     windSpeed: 'காற்றின் வேகம்',
     visibility: 'பார்வைநிலை',
-    sevenDayForecast: 'விவசாய முன்னறிவிப்பு',
+    sevenDayForecast: 'Farming Forecast',
     rainChance: 'மழை வாய்ப்பு',
 
     // Profile Page

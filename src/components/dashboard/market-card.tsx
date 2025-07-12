@@ -40,12 +40,6 @@ export function MarketCard() {
             ))}
         </ul>
         <div className="flex-grow" />
-        <Button asChild variant="ghost" className="mt-4 self-end text-sm text-primary hover:text-primary/90">
-          <Link href="/market-analysis">
-            {t('learnMore')}
-            <ChevronRight className="h-4 w-4 ml-1" />
-          </Link>
-        </Button>
       </CardContent>
     </Card>
   );

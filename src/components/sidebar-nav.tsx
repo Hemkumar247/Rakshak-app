@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -41,11 +40,6 @@ export function SidebarNav() {
         href: '/weather',
         label: t('weather'),
         icon: Sun,
-    },
-    {
-      href: '/market-analysis',
-      label: t('marketAnalysis'),
-      icon: TrendingUp,
     },
     {
       href: '/schemes',
