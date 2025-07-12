@@ -78,7 +78,7 @@ const translations = {
 
     // Market Analysis
     marketAnalysisTitle: 'Market Price Analysis',
-    marketAnalysisDescription: 'Get AI-powered advice on the best time to sell your harvested crops.',
+    marketAnalysisDescription: 'Fetch live market prices for your crops to see the latest trends.',
     cropName: 'Crop Name',
     cropNamePlaceholder: 'e.g., Wheat, Tomato, Soybean',
     harvestTime: 'Harvest Time',
@@ -217,7 +217,7 @@ const translations = {
 
     // Market Analysis
     marketAnalysisTitle: 'बाजार मूल्य विश्लेषण',
-    marketAnalysisDescription: 'अपनी काटी हुई फसलों को बेचने के सर्वोत्तम समय पर AI-संचालित सलाह प्राप्त करें।',
+    marketAnalysisDescription: 'नवीनतम रुझानों को देखने के लिए अपनी फसलों के लिए लाइव बाजार मूल्य प्राप्त करें।',
     cropName: 'फसल का नाम',
     cropNamePlaceholder: 'जैसे, गेहूं, टमाटर, सोयाबीन',
     harvestTime: 'कटाई का समय',
@@ -356,7 +356,7 @@ const translations = {
 
     // Market Analysis
     marketAnalysisTitle: 'சந்தை விலை பகுப்பாய்வு',
-    marketAnalysisDescription: 'அறுவடை செய்த பயிர்களை விற்க சிறந்த நேரம் குறித்த AI-இயங்கும் ஆலோசனையைப் பெறுங்கள்.',
+    marketAnalysisDescription: 'சமீபத்திய போக்குகளைப் பார்க்க உங்கள் பயிர்களுக்கான நேரடி சந்தை விலைகளைப் பெறுங்கள்.',
     cropName: 'பயிர் பெயர்',
     cropNamePlaceholder: 'எ.கா., கோதுமை, தக்காளி, சோயாபீன்',
     harvestTime: 'அறுவடை நேரம்',

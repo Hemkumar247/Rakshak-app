@@ -1,16 +1,31 @@
 // src/app/market-analysis/actions.ts
 "use server";
 
-import { marketAnalysis, type MarketAnalysisInput, type MarketAnalysisOutput } from "@/ai/flows/market-analysis-flow";
+import { getCommodityPriceData, type PriceData } from "@/services/data-gov-service";
 
-export type { MarketAnalysisOutput };
+export interface MarketPriceData {
+    commodity: string;
+    state: string;
+    market: string;
+    priceData: PriceData[];
+}
 
-export async function getMarketAnalysis(input: MarketAnalysisInput): Promise<MarketAnalysisOutput> {
+export async function getMarketPrices(commodity: string, state: string, market: string): Promise<MarketPriceData> {
   try {
-    const result = await marketAnalysis(input);
-    return result;
+    const prices = await getCommodityPriceData({ commodity, state, market });
+    
+    if (prices.length === 0) {
+        throw new Error(`No market data found for ${commodity} in ${market}, ${state}. Please check your inputs or try a different market.`);
+    }
+    
+    return {
+        commodity,
+        state,
+        market,
+        priceData: prices
+    };
   } catch (error) {
-    console.error("Error in getMarketAnalysis action:", error);
-    throw new Error("Failed to fetch market analysis from AI.");
+    console.error("Error in getMarketPrices action:", error);
+    throw new Error("Failed to fetch market prices.");
   }
 }

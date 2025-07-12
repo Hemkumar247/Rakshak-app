@@ -5,9 +5,8 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Loader2, TrendingUp, BarChart, Check, X, Tag, Calendar, ShieldCheck } from 'lucide-react';
-import { Bar, BarChart as RechartsBarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
-
+import { Loader2, TrendingUp, BarChart, Tag, Calendar, ShieldCheck, AreaChart } from 'lucide-react';
+import { Area, AreaChart as RechartsAreaChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,24 +18,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useLanguage } from '@/lib/i18n';
 import { useToast } from '@/hooks/use-toast';
-import { getMarketAnalysis, type MarketAnalysisOutput } from './actions';
+import { getMarketPrices } from './actions';
+import type { MarketPriceData } from './actions';
 
 const formSchema = z.object({
   commodity: z.string().min(2, "Crop name is required."),
   state: z.string().min(2, "State is required."),
   market: z.string().min(2, "Market is required."),
-  harvestTime: z.string().min(1, "Harvest time is required."),
-  cropCondition: z.string().min(1, "Crop condition is required."),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -44,7 +35,7 @@ type FormValues = z.infer<typeof formSchema>;
 export default function MarketAnalysisPage() {
   const { t, language } = useLanguage();
   const { toast } = useToast();
-  const [analysis, setAnalysis] = useState<MarketAnalysisOutput | null>(null);
+  const [priceData, setPriceData] = useState<MarketPriceData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<FormValues>({
@@ -53,30 +44,32 @@ export default function MarketAnalysisPage() {
       commodity: "",
       state: "",
       market: "",
-      harvestTime: "",
-      cropCondition: "",
     },
   });
 
   async function onSubmit(values: FormValues) {
     setIsLoading(true);
-    setAnalysis(null);
+    setPriceData(null);
     try {
-      const result = await getMarketAnalysis({ ...values, language });
-      setAnalysis(result);
+      const result = await getMarketPrices(values.commodity, values.state, values.market);
+      setPriceData(result);
     } catch (error) {
-      console.error("Failed to get market analysis:", error);
+      console.error("Failed to get market prices:", error);
+      let errorMessage = t('errorDescription');
+      if (error instanceof Error && error.message.includes('No market data found')) {
+        errorMessage = error.message;
+      }
       toast({
         variant: "destructive",
         title: t('errorTitle'),
-        description: t('errorDescription'),
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
     }
   }
 
-  const chartData = analysis?.priceData.map(d => ({ name: d.day, price: d.price }));
+  const chartData = priceData?.priceData.map(d => ({ name: d.day, price: d.price }));
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -89,7 +82,7 @@ export default function MarketAnalysisPage() {
         <Card className="shadow-lg border-white/40">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 font-headline">
-              <TrendingUp /> {t('getAnalysis')}
+              <TrendingUp /> Get Market Prices
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -134,55 +127,10 @@ export default function MarketAnalysisPage() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="harvestTime"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('harvestTime')}</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select harvest time" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="just_now">{t('harvestTimeJustNow')}</SelectItem>
-                          <SelectItem value="2_days_ago">{t('harvestTime2Days')}</SelectItem>
-                          <SelectItem value="4_days_ago">{t('harvestTime4Days')}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="cropCondition"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('cropCondition')}</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select crop condition" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                            <SelectItem value="perfect">{t('conditionPerfect')}</SelectItem>
-                            <SelectItem value="good">{t('conditionGood')}</SelectItem>
-                            <SelectItem value="average">{t('conditionAverage')}</SelectItem>
-                            <SelectItem value="poor">{t('conditionPoor')}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
+                
                 <Button type="submit" disabled={isLoading} className="w-full">
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {isLoading ? t('loading') : t('getAnalysis')}
+                  {isLoading ? t('loading') : "Get Prices"}
                 </Button>
               </form>
             </Form>
@@ -193,39 +141,32 @@ export default function MarketAnalysisPage() {
           {isLoading && (
             <div className="flex flex-col items-center justify-center h-96 bg-card rounded-lg shadow-lg border-white/40">
               <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-              <p className="text-lg text-muted-foreground">{t('aiAnalyzingPrices')}</p>
+              <p className="text-lg text-muted-foreground">Fetching live prices...</p>
             </div>
           )}
-          {analysis && (
+          {priceData && (
             <Card className="shadow-lg border-white/40">
               <CardHeader>
-                <CardTitle className="font-headline text-2xl">{t('resultsFor')} <span className="text-primary">{analysis.commodity}</span></CardTitle>
+                <CardTitle className="font-headline text-2xl">Price Trend for <span className="text-primary">{priceData.commodity}</span></CardTitle>
                 <CardDescription className="flex items-center gap-4 pt-2">
-                    <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> {analysis.harvestTime}</span>
-                    <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> {analysis.cropCondition}</span>
+                    <span className="flex items-center gap-2">{priceData.market}, {priceData.state}</span>
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <Card className="bg-card/50">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg">
-                            {analysis.recommendation === 'Sell Now' ? <Check className="text-green-500"/> : <X className="text-red-500" />}
-                            {t('recommendation')}: <span className={analysis.recommendation === 'Sell Now' ? 'text-green-500' : 'text-red-500'}>{analysis.translatedRecommendation}</span>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-muted-foreground">{analysis.reasoning}</p>
-                    </CardContent>
-                </Card>
-
-                <div>
-                    <h3 className="font-headline text-lg font-semibold mb-2">{t('priceTrend')}</h3>
+                 <div>
+                    <h3 className="font-headline text-lg font-semibold mb-2">Price Trend (Last 5 Days)</h3>
                     <div className="h-[250px] w-full">
                         <ResponsiveContainer>
-                            <RechartsBarChart data={chartData}>
+                            <RechartsAreaChart data={chartData}>
+                                <defs>
+                                    <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
+                                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                                    </linearGradient>
+                                </defs>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                 <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(value) => `₹${value}`} />
+                                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(value) => `₹${value}`} domain={['dataMin - 100', 'dataMax + 100']} />
                                 <Tooltip
                                     contentStyle={{ 
                                         backgroundColor: "hsl(var(--background))", 
@@ -234,18 +175,18 @@ export default function MarketAnalysisPage() {
                                     labelStyle={{ color: "hsl(var(--foreground))" }}
                                     formatter={(value: number) => [`₹${value.toFixed(2)}`, t('pricePerQuintal')]}
                                 />
-                                <Bar dataKey="price" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                            </RechartsBarChart>
+                                <Area type="monotone" dataKey="price" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorPrice)" />
+                            </RechartsAreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
               </CardContent>
             </Card>
           )}
-          {!isLoading && !analysis && (
+          {!isLoading && !priceData && (
             <div className="flex flex-col items-center justify-center h-96 text-center bg-card rounded-lg shadow-lg border-white/40">
-              <BarChart className="h-16 w-16 text-muted-foreground/50 mb-4" />
-              <p className="text-muted-foreground text-lg">{t('analysisResults')}</p>
+              <AreaChart className="h-16 w-16 text-muted-foreground/50 mb-4" />
+              <p className="text-muted-foreground text-lg">Market price trends will appear here.</p>
               <p className="text-muted-foreground/80">{t('enterDetails')}</p>
             </div>
           )}
