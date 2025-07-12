@@ -132,11 +132,22 @@ export function WeatherCard() {
         return <p className="text-sm text-center text-destructive">{error || "No data available."}</p>;
     }
 
-    const forecast = weatherData.forecast.slice(0, 5).map(day => ({
-        ...day,
-        shortDay: day.day === 'Today' || day.day === 'Tomorrow' ? day.day.substring(0,4) : new Date(day.day).toLocaleDateString('en-US', { weekday: 'short'}),
-        Icon: conditionToIconMap[day.condition] || Sun,
-    }));
+    const forecast = weatherData.forecast.slice(0, 5).map((day, index) => {
+        let shortDay: string;
+        if (index === 0) {
+            shortDay = 'Today';
+        } else if (index === 1) {
+            shortDay = 'Tomorrow';
+        } else {
+            // Use the original full day name from the action which is already formatted
+            shortDay = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(new Date(day.day));
+        }
+        return {
+            ...day,
+            shortDay,
+            Icon: conditionToIconMap[day.condition] || Sun,
+        };
+    });
     
     return (
         <>
