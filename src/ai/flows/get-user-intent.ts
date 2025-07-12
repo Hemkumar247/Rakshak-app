@@ -7,10 +7,10 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
 const GetUserIntentInputSchema = z.object({
-  audioDataUri: z
+  command: z
     .string()
     .describe(
-      "A voice command from the user, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      "A transcribed voice command from the user."
     ),
   language: z
     .string()
@@ -49,8 +49,8 @@ const prompt = ai.definePrompt({
   name: 'getUserIntentPrompt',
   input: { schema: GetUserIntentInputSchema },
   output: { schema: GetUserIntentOutputSchema },
-  prompt: `You are a voice command interpreter for a farming assistance app called Rakshak.
-Your task is to analyze the user's voice command and determine their intent.
+  prompt: `You are a command interpreter for a farming assistance app called Rakshak.
+Your task is to analyze the user's transcribed command and determine their intent.
 
 The available pages and their corresponding paths are:
 - Dashboard: /dashboard
@@ -63,7 +63,7 @@ The available pages and their corresponding paths are:
 - Settings: /settings
 - Support: /support
 
-Analyze the user's voice command.
+Analyze the user's command.
 - If the user wants to go to a specific page, set the intent to 'navigation' and the 'page' to the correct path.
 - If the user is asking about the price of a specific crop, set the intent to 'market_price' and extract the 'cropName'.
 - If the user wants to diagnose a plant, set the intent to 'diagnosis'.
@@ -71,7 +71,7 @@ Analyze the user's voice command.
 
 The entire command is in the language: {{language}}
 
-User's voice command: {{media url=audioDataUri}}`,
+User's command: {{{command}}}`,
 });
 
 const getUserIntentFlow = ai.defineFlow(

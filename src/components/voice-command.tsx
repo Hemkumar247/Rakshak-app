@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Loader2 } from 'lucide-react';
-// @ts-ignore - The react-media-recorder package does not have official type definitions.
-import { useReactMediaRecorder } from 'react-media-recorder';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/lib/i18n';
 import { getUserIntent } from '@/app/actions';
@@ -17,45 +15,84 @@ import {
 } from "@/components/ui/tooltip";
 import type { GetUserIntentOutput } from '@/ai/flows/get-user-intent';
 
+// Add SpeechRecognition types for browsers that support it
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
 
 export function VoiceCommand() {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const router = useRouter();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
-  
-  const onStop = async (blobUrl: string, blob: Blob) => {
-    setIsProcessing(true);
-    try {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = async () => {
-        const base64Audio = reader.result as string;
-        
-        const intentResult = await getUserIntent({ 
-            audioDataUri: base64Audio, 
-            language: language 
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({
+        variant: 'destructive',
+        title: "Browser Not Supported",
+        description: "Your browser doesn't support voice commands.",
+      });
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = language;
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+      // If it stops without processing, it means no speech was detected.
+      if (!isProcessing) {
+          setIsProcessing(false);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error", event.error);
+      toast({
+        variant: 'destructive',
+        title: "Voice Error",
+        description: event.error === 'no-speech' ? "I didn't hear anything. Please try again." : "An error occurred during voice recognition.",
+      });
+      setIsProcessing(false);
+    };
+
+    recognition.onresult = async (event: any) => {
+      const command = event.results[0][0].transcript;
+      setIsProcessing(true);
+      try {
+        const intentResult = await getUserIntent({
+          command,
+          language: language,
         });
 
         if (intentResult && intentResult.intent) {
-            handleIntent(intentResult);
+          handleIntent(intentResult);
         } else {
-            toast({ variant: 'destructive', title: "Could not understand", description: "Please try speaking again clearly." });
+          toast({ variant: 'destructive', title: "Could not understand", description: "Please try speaking again clearly." });
         }
-      };
-    } catch (error) {
+      } catch (error) {
         console.error("Error processing voice command:", error);
         toast({ variant: 'destructive', title: "Voice Error", description: "Failed to process your voice command." });
-    } finally {
+      } finally {
         setIsProcessing(false);
-    }
-  };
-
-  const { status, startRecording, stopRecording } = useReactMediaRecorder({ 
-      audio: true,
-      onStop,
-      blobPropertyBag: { type: 'audio/wav' } 
-    });
+      }
+    };
+    
+    recognitionRef.current = recognition;
+  }, [language, toast]); // Re-initialize if language changes
 
   const handleIntent = (intent: GetUserIntentOutput) => {
     switch(intent.intent) {
@@ -85,7 +122,21 @@ export function VoiceCommand() {
     }
   }
 
-  const isRecording = status === 'recording';
+  const handleMicClick = () => {
+    if (!recognitionRef.current) return;
+
+    if (isRecording) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
+    }
+  };
+
+  const getTooltipContent = () => {
+    if (isRecording) return 'Recording...';
+    if (isProcessing) return 'Processing...';
+    return t('appName') + ' is listening!';
+  }
 
   return (
     <TooltipProvider>
@@ -95,8 +146,8 @@ export function VoiceCommand() {
                     <Button
                         size="icon"
                         className={`h-14 w-14 rounded-full shadow-lg transition-all duration-300 ${isRecording ? 'bg-red-600 hover:bg-red-700 animate-pulse' : 'bg-primary hover:bg-accent hover:text-accent-foreground'}`}
-                        onClick={isRecording ? stopRecording : startRecording}
-                        disabled={isProcessing}
+                        onClick={handleMicClick}
+                        disabled={!recognitionRef.current}
                     >
                         {isProcessing ? (
                             <Loader2 className="h-6 w-6 animate-spin" />
@@ -112,7 +163,7 @@ export function VoiceCommand() {
                 </div>
             </TooltipTrigger>
             <TooltipContent side="left" className="mb-2">
-                <p>{isRecording ? 'Recording...' : isProcessing ? 'Processing...' : 'Ask me anything!'}</p>
+                <p>{getTooltipContent()}</p>
             </TooltipContent>
         </Tooltip>
     </TooltipProvider>
