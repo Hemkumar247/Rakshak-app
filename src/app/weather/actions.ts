@@ -1,4 +1,5 @@
 
+
 "use server";
 
 import { getWeatherBasedFarmTip } from "@/ai/flows/weather-based-farm-tips";
@@ -33,7 +34,7 @@ export async function getAIFarmTip(input: WeatherBasedFarmTipInput): Promise<Wea
 }
 
 export async function getRealtimeWeather(location: string): Promise<WeatherData> {
-    const apiKey = process.env.WEATHER_API_KEY;
+    const apiKey = "d62e775d50dd4a7887e62124251107";
     if (!apiKey) {
       throw new Error("Weather API key is not configured.");
     }
