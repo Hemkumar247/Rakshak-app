@@ -11,40 +11,17 @@ export interface MarketCardDataItem {
 
 // Fetches price data for a few key commodities to display on the dashboard market card.
 export async function getMarketCardData(): Promise<MarketCardDataItem[]> {
-  const commodities = ['Wheat', 'Potato', 'Onion', 'Tomato'];
-  const state = 'NCT of Delhi';
-  const market = 'Azadpur';
+  // For demo purposes, we are returning a hardcoded dataset.
+  // This avoids issues with the live API not having recent data.
+  const fakeData: MarketCardDataItem[] = [
+    { crop: 'Wheat', change: 1.5, status: 'up' },
+    { crop: 'Potato', change: -0.8, status: 'down' },
+    { crop: 'Onion', change: 2.1, status: 'up' },
+    { crop: 'Tomato', change: -0.2, status: 'down' },
+  ];
 
-  const dataPromises = commodities.map(async (commodity) => {
-    try {
-      const priceHistory = await getCommodityPriceData({ commodity, state, market });
-      
-      if (priceHistory.length < 2) {
-        // Not enough data to calculate change
-        return { crop: commodity, change: 0, status: 'stable' as const };
-      }
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Get the last two available records
-      const latestPrice = priceHistory[priceHistory.length - 1].modal_price;
-      const previousPrice = priceHistory[priceHistory.length - 2].modal_price;
-      
-      if (previousPrice === 0) {
-        return { crop: commodity, change: 0, status: 'stable' as const };
-      }
-
-      const change = ((latestPrice - previousPrice) / previousPrice) * 100;
-      let status: 'up' | 'down' | 'stable' = 'stable';
-      if (change > 0) status = 'up';
-      if (change < 0) status = 'down';
-
-      return { crop: commodity, change, status };
-    } catch (error) {
-      console.error(`Failed to fetch data for ${commodity} in dashboard card:`, error);
-      // Return a stable state on error to avoid breaking the UI
-      return { crop: commodity, change: 0, status: 'stable' as const };
-    }
-  });
-
-  const results = await Promise.all(dataPromises);
-  return results;
+  return fakeData;
 }
