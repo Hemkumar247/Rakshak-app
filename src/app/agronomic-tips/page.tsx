@@ -111,14 +111,14 @@ export default function PlantDiagnosisPage() {
 );
 
   return (
-    <div className="space-y-8">
-      <div>
+    <div className="space-y-8 animate-fade-in">
+      <div className="text-center">
         <h1 className="text-3xl font-headline font-bold tracking-tight">{t('plantDiagnosisTitle')}</h1>
         <p className="text-muted-foreground">{t('plantDiagnosisDescription')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        <Card className="shadow-lg border-white/40">
+        <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-headline">
                     <Sparkles /> {t('newDiagnosis')}
@@ -135,7 +135,7 @@ export default function PlantDiagnosisPage() {
                       <FormLabel>{t('plantPhoto')}</FormLabel>
                       <FormControl>
                         <div
-                          className="relative border-2 border-dashed border-muted-foreground/30 rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors"
+                          className="relative border-2 border-dashed border-muted-foreground/30 rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors bg-background/50"
                           onClick={() => fileInputRef.current?.click()}
                         >
                           <input
@@ -185,7 +185,7 @@ export default function PlantDiagnosisPage() {
         </Card>
 
         <div className="animate-fade-in">
-          <Card className="shadow-lg border-white/40 min-h-[400px]">
+          <Card className="min-h-[400px]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 font-headline">
                 <HeartPulse /> {t('diagnosisResult')}
@@ -208,7 +208,7 @@ export default function PlantDiagnosisPage() {
                     </Alert>
                   ) : (
                     <div className="space-y-6">
-                        <Card className="bg-card/50">
+                        <Card className="bg-background/50">
                             <CardHeader>
                                 <CardTitle className="text-2xl font-bold font-headline text-primary">{diagnosis.plantName}</CardTitle>
                                 <CardDescription className="flex items-center gap-2">

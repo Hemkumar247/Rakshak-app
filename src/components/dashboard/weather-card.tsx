@@ -20,7 +20,7 @@ export function WeatherCard() {
   const { t } = useLanguage();
 
   return (
-    <Card className="shadow-lg border-white/40 hover:shadow-xl transition-shadow duration-300 flex flex-col">
+    <Card className="flex flex-col">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-headline">
           <Sun className="text-accent" />

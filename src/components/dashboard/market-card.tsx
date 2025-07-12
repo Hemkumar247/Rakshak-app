@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { useLanguage } from '@/lib/i18n';
-import { DollarSign, ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
+import { DollarSign, ArrowUp, ArrowDown } from 'lucide-react';
 import { getMarketCardData, MarketCardDataItem } from '@/app/dashboard/actions';
 import { Skeleton } from '../ui/skeleton';
 
@@ -72,13 +72,13 @@ export function MarketCard() {
   };
 
   return (
-    <Card className="shadow-lg border-white/40 hover:shadow-xl transition-shadow duration-300 flex flex-col">
+    <Card className="flex flex-col">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-headline">
           <DollarSign className="text-accent" />
           {t('marketFactors')}
         </CardTitle>
-        <CardDescription>Today's price changes (Delhi)</CardDescription>
+        <CardDescription>Today's price changes (Demo)</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col flex-grow">
         {renderContent()}

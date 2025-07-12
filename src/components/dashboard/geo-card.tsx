@@ -4,14 +4,14 @@
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { useLanguage } from '@/lib/i18n';
-import { Globe, Mountain, ChevronRight } from 'lucide-react';
+import { Globe, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
 
 export function GeoCard() {
   const { t } = useLanguage();
 
   return (
-    <Card className="shadow-lg border-white/40 hover:shadow-xl transition-shadow duration-300 flex flex-col">
+    <Card className="flex flex-col">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-headline">
           <Globe className="text-accent" />
@@ -31,7 +31,7 @@ export function GeoCard() {
             </div>
         </div>
         <div className="flex-grow" />
-        <Button asChild variant="ghost" className="mt-4 self-end text-sm text-primary hover:text-primary/90">
+        <Button asChild variant="ghost" className="mt-4 self-end text-sm text-primary hover:text-primary/90 justify-self-end">
           <Link href="/crop-suggestions">
             {t('getSuggestions')}
             <ChevronRight className="h-4 w-4 ml-1" />

@@ -120,14 +120,14 @@ export default function CropSuggestionsPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div>
+    <div className="space-y-8 animate-fade-in">
+      <div className="text-center">
         <h1 className="text-3xl font-headline font-bold tracking-tight">{t('cropSuggestionsTitle')}</h1>
         <p className="text-muted-foreground">{t('cropSuggestionsDescription')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        <Card className="shadow-lg border-white/40">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 font-headline">
               <Bot /> {t('getSuggestions')}
@@ -174,9 +174,9 @@ export default function CropSuggestionsPage() {
           )}
           {recommendations && (
              <div className="space-y-6">
-              <h2 className="text-2xl font-headline font-bold">{t('recommendations')}</h2>
+              <h2 className="text-2xl font-headline font-bold text-center">{t('recommendations')}</h2>
               {recommendations.map((rec) => (
-                <Card key={rec.cropName} className="shadow-lg border-white/40 overflow-hidden">
+                <Card key={rec.cropName} className="overflow-hidden">
                     <div className="relative h-48 w-full">
                         <Image 
                             src={rec.imageDataUri || `https://placehold.co/600x400.png`} 
@@ -205,7 +205,7 @@ export default function CropSuggestionsPage() {
             </div>
           )}
           {!isLoading && !recommendations && (
-            <div className="flex flex-col items-center justify-center h-96 text-center bg-card rounded-lg shadow-lg border-white/40">
+            <div className="flex flex-col items-center justify-center h-96 text-center bg-card rounded-lg">
               <Bot className="h-16 w-16 text-muted-foreground/50 mb-4" />
               <p className="text-muted-foreground text-lg">Your crop recommendations will appear here.</p>
               <p className="text-muted-foreground/80">Enter a location or use your current one to get started.</p>
