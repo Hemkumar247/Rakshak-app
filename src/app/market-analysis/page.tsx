@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Loader2, TrendingUp, BarChart, Tag, Calendar, ShieldCheck, AreaChart } from 'lucide-react';
+import { Loader2, TrendingUp, BarChart, Tag, Calendar, ShieldCheck, AreaChart, MapPin } from 'lucide-react';
 import { Area, AreaChart as RechartsAreaChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 import { Button } from "@/components/ui/button";
@@ -27,23 +27,22 @@ import type { MarketPriceData } from './actions';
 const formSchema = z.object({
   commodity: z.string().min(2, "Crop name is required."),
   state: z.string().min(2, "State is required."),
-  market: z.string().min(2, "Market is required."),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 export default function MarketAnalysisPage() {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [priceData, setPriceData] = useState<MarketPriceData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       commodity: "",
       state: "",
-      market: "",
     },
   });
 
@@ -51,12 +50,12 @@ export default function MarketAnalysisPage() {
     setIsLoading(true);
     setPriceData(null);
     try {
-      const result = await getMarketPrices(values.commodity, values.state, values.market);
+      const result = await getMarketPrices(values.commodity, values.state);
       setPriceData(result);
     } catch (error) {
       console.error("Failed to get market prices:", error);
       let errorMessage = t('errorDescription');
-      if (error instanceof Error && error.message.includes('No market data found')) {
+      if (error instanceof Error) {
         errorMessage = error.message;
       }
       toast({
@@ -67,6 +66,78 @@ export default function MarketAnalysisPage() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  async function handleGetLocation() {
+    if (!navigator.geolocation) {
+      toast({
+        variant: "destructive",
+        title: "Geolocation Not Supported",
+        description: "Your browser does not support geolocation.",
+      });
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
+          if (!response.ok) throw new Error("Failed to fetch address");
+          const data = await response.json();
+          const state = data.address.state;
+          const market = data.address.city || data.address.town || data.address.village;
+
+          if (!state) {
+            throw new Error("Could not determine state from your location.");
+          }
+
+          form.setValue('state', state, { shouldValidate: true });
+          
+          toast({
+            title: "Location Found",
+            description: "Your state has been filled in.",
+          });
+
+          // If a crop is already entered, trigger a search
+          const currentCommodity = form.getValues('commodity');
+          if (currentCommodity && market) {
+            setIsLoading(true);
+            setPriceData(null);
+            const result = await getMarketPrices(currentCommodity, state, market);
+            setPriceData(result);
+            setIsLoading(false);
+          }
+
+        } catch (e) {
+            console.error("Reverse geocoding failed", e);
+            toast({
+                variant: "destructive",
+                title: "Could not fetch address",
+                description: e instanceof Error ? e.message : "An unknown error occurred.",
+            });
+        } finally {
+            setIsLocating(false);
+        }
+      },
+      (error) => {
+        setIsLocating(false);
+        let description = "An unknown error occurred.";
+        if (error.code === error.PERMISSION_DENIED) {
+            description = "You denied the request for Geolocation.";
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+            description = "Location information is unavailable.";
+        } else if (error.code === error.TIMEOUT) {
+            description = "The request to get user location timed out.";
+        }
+        toast({
+          variant: "destructive",
+          title: "Error Getting Location",
+          description,
+        });
+      }
+    );
   }
 
   const chartData = priceData?.priceData.map(d => ({ name: d.day, price: d.price }));
@@ -107,27 +178,18 @@ export default function MarketAnalysisPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>State</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., Maharashtra" {...field} />
-                      </FormControl>
+                      <div className="flex gap-2">
+                        <FormControl>
+                          <Input placeholder="e.g., Maharashtra" {...field} />
+                        </FormControl>
+                        <Button type="button" variant="outline" onClick={handleGetLocation} disabled={isLocating} aria-label="Use My Location">
+                            {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
+                        </Button>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                 <FormField
-                  control={form.control}
-                  name="market"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Market</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., Pune" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
                 <Button type="submit" disabled={isLoading} className="w-full">
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {isLoading ? t('loading') : "Get Prices"}
