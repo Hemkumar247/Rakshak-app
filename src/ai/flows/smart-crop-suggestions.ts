@@ -44,6 +44,9 @@ const smartCropSuggestionsPrompt = ai.definePrompt({
   name: 'smartCropSuggestionsPrompt',
   input: {schema: SmartCropSuggestionsInputSchema},
   output: {schema: SmartCropSuggestionsOutputSchema},
+  config: {
+    temperature: 0, // Make the output deterministic
+  },
   prompt: `You are an expert agronomist AI, and your task is to provide seasonal crop recommendations. Today's date is {{currentDate}}.
 
   Based on the farm's location, analyze the regional climate, typical soil types, and the current season.
