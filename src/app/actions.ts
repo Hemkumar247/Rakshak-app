@@ -1,7 +1,7 @@
 'use server';
 
 import {
-  getUserIntent,
+  getUserIntent as getUserIntentFlow,
   type GetUserIntentInput,
   type GetUserIntentOutput,
 } from '@/ai/flows/get-user-intent';
@@ -10,7 +10,7 @@ export async function getUserIntent(
   input: GetUserIntentInput
 ): Promise<GetUserIntentOutput> {
   try {
-    const result = await getUserIntent(input);
+    const result = await getUserIntentFlow(input);
     return result;
   } catch (error) {
     console.error('Error in getUserIntent action:', error);

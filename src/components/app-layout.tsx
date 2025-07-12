@@ -1,5 +1,13 @@
+"use client";
+
+import dynamic from 'next/dynamic';
 import { Header } from '@/components/header';
-import { VoiceCommand } from '@/components/voice-command';
+
+// Dynamically import VoiceCommand with SSR turned off
+const VoiceCommand = dynamic(() => import('@/components/voice-command').then(mod => mod.VoiceCommand), {
+  ssr: false,
+});
+
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
