@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Upload, Loader2, Leaf, HeartPulse, ShieldCheck, Bug, Pill, Spray, AlertCircle, Sparkles } from 'lucide-react';
+import { Upload, Loader2, Leaf, HeartPulse, ShieldCheck, Bug, Pill, Spray, AlertCircle, Sparkles, Image as ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 
 import { Button } from "@/components/ui/button";
@@ -228,6 +228,25 @@ export default function PlantDiagnosisPage() {
                         </Card>
                        
                         {renderResultSection(t('diagnosis'), diagnosis.diagnosis, Bug, "text-destructive")}
+                        
+                        {!diagnosis.isHealthy && diagnosis.diseaseImageUrl && (
+                            <div>
+                                <h3 className="text-xl font-headline font-bold mb-3 flex items-center gap-2 text-orange-600">
+                                    <ImageIcon className="h-6 w-6" /> Reference Image
+                                </h3>
+                                <p className="text-sm text-muted-foreground mb-2">Does your plant look like this? This helps confirm the diagnosis.</p>
+                                <div className="relative w-full h-48 rounded-md overflow-hidden border">
+                                    <Image 
+                                        src={diagnosis.diseaseImageUrl} 
+                                        alt={`Reference image for ${diagnosis.diseaseName}`} 
+                                        layout="fill" 
+                                        objectFit="cover"
+                                        unoptimized={diagnosis.diseaseImageUrl.startsWith('data:image')}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
                         {renderResultSection(t('treatment'), diagnosis.treatment, Pill, "text-green-600")}
                         {renderResultSection(t('prevention'), diagnosis.prevention, ShieldCheck, "text-blue-600")}
                     </div>

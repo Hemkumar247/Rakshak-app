@@ -29,6 +29,7 @@ const DiagnosePlantDiseaseOutputSchema = z.object({
   diagnosis: z.array(z.string()).describe("A short, crisp list of observations about the plant's health from the image."),
   treatment: z.array(z.string()).describe("A short, crisp list of recommended steps to treat the disease."),
   prevention: z.array(z.string()).describe("A short, crisp list of tips to prevent this disease in the future."),
+  diseaseImageUrl: z.string().optional().describe('A generated image URL of a plant with the diagnosed disease for reference.'),
 });
 export type DiagnosePlantDiseaseOutput = z.infer<typeof DiagnosePlantDiseaseOutputSchema>;
 
@@ -53,6 +54,8 @@ Based on your analysis, provide the following:
 6.  **treatment**: A simple, actionable list of steps the farmer can take to treat the issue.
 7.  **prevention**: A simple, actionable list of steps to prevent the issue from happening again.
 
+Do not fill the diseaseImageUrl field. This will be handled in a separate step.
+
 The entire response, including all names and descriptions, must be in the following language: {{language}}.
 
 User's Description: {{{userDescription}}}
@@ -66,7 +69,30 @@ const diagnosePlantDiseaseFlow = ai.defineFlow(
     outputSchema: DiagnosePlantDiseaseOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    const {output: diagnosisResult} = await prompt(input);
+    
+    if (!diagnosisResult) {
+        throw new Error("Failed to get a diagnosis from the AI.");
+    }
+
+    // If the plant is not healthy, generate a reference image of the disease.
+    if (!diagnosisResult.isHealthy && diagnosisResult.plantName && diagnosisResult.diseaseName !== 'None') {
+        try {
+            const {media} = await ai.generate({
+                model: 'googleai/gemini-2.0-flash-preview-image-generation',
+                prompt: `Generate a clear, close-up reference photo of a ${diagnosisResult.plantName} plant leaf showing typical symptoms of ${diagnosisResult.diseaseName}.`,
+                config: {
+                    responseModalities: ['TEXT', 'IMAGE'],
+                },
+            });
+            diagnosisResult.diseaseImageUrl = media.url;
+        } catch(e) {
+            console.error(`Failed to generate disease reference image for ${diagnosisResult.diseaseName}`, e);
+            // Fallback to a placeholder if image generation fails
+            diagnosisResult.diseaseImageUrl = `https://placehold.co/600x400.png?text=Reference+Image`;
+        }
+    }
+
+    return diagnosisResult;
   }
 );
