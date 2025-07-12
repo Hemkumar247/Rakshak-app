@@ -3,9 +3,10 @@
 
 import { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Loader2, TrendingUp, DollarSign } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,9 +34,10 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export default function MarketAnalysisPage() {
+function MarketAnalysisContent() {
   const { t } = useLanguage();
   const { toast } = useToast();
+  const searchParams = useSearchParams();
   const [priceData, setPriceData] = useState<MarketPriceData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
@@ -54,6 +56,15 @@ export default function MarketAnalysisPage() {
   });
 
   const selectedState = form.watch('state');
+  
+  // Set commodity from URL search params
+  useEffect(() => {
+    const cropFromUrl = searchParams.get('crop');
+    if (cropFromUrl) {
+      form.setValue('commodity', cropFromUrl, { shouldValidate: true });
+    }
+  }, [searchParams, form]);
+
 
   useEffect(() => {
     async function loadStates() {
@@ -236,4 +247,12 @@ export default function MarketAnalysisPage() {
       </div>
     </div>
   );
+}
+
+export default function MarketAnalysisPage() {
+    return (
+        <React.Suspense fallback={<div>Loading...</div>}>
+            <MarketAnalysisContent />
+        </React.Suspense>
+    )
 }

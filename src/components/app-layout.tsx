@@ -1,4 +1,5 @@
 import { Header } from '@/components/header';
+import { VoiceCommand } from '@/components/voice-command';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -7,6 +8,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <main className="flex-1 w-full max-w-7xl mx-auto p-4 lg:p-6">
         {children}
       </main>
+      <VoiceCommand />
     </div>
   );
 }
