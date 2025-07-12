@@ -54,7 +54,9 @@ export function VoiceCommand() {
     recognition.onend = () => {
       setIsRecording(false);
       // If it stops without processing, it means no speech was detected.
-      if (!isProcessing) {
+      if (isProcessing) {
+          // This will be set to false in the onresult handler's finally block
+      } else {
           setIsProcessing(false);
       }
     };
@@ -67,11 +69,12 @@ export function VoiceCommand() {
         description: event.error === 'no-speech' ? "I didn't hear anything. Please try again." : "An error occurred during voice recognition.",
       });
       setIsProcessing(false);
+      setIsRecording(false);
     };
 
     recognition.onresult = async (event: any) => {
       const command = event.results[0][0].transcript;
-      setIsProcessing(true);
+      setIsProcessing(true); // Moved here to signal processing has started
       try {
         const intentResult = await getUserIntent({
           command,
@@ -92,7 +95,7 @@ export function VoiceCommand() {
     };
     
     recognitionRef.current = recognition;
-  }, [language, toast]); // Re-initialize if language changes
+  }, [language, toast, router, isProcessing]); // Added dependencies
 
   const handleIntent = (intent: GetUserIntentOutput) => {
     switch(intent.intent) {
@@ -128,6 +131,7 @@ export function VoiceCommand() {
     if (isRecording) {
       recognitionRef.current.stop();
     } else {
+      setIsProcessing(true); // Show loading state immediately on click
       recognitionRef.current.start();
     }
   };
@@ -138,6 +142,8 @@ export function VoiceCommand() {
     return t('appName') + ' is listening!';
   }
 
+  const isDisabled = !recognitionRef.current || isProcessing;
+
   return (
     <TooltipProvider>
         <Tooltip>
@@ -147,9 +153,9 @@ export function VoiceCommand() {
                         size="icon"
                         className={`h-14 w-14 rounded-full shadow-lg transition-all duration-300 ${isRecording ? 'bg-red-600 hover:bg-red-700 animate-pulse' : 'bg-primary hover:bg-accent hover:text-accent-foreground'}`}
                         onClick={handleMicClick}
-                        disabled={!recognitionRef.current}
+                        disabled={isDisabled}
                     >
-                        {isProcessing ? (
+                        {isProcessing && !isRecording ? (
                             <Loader2 className="h-6 w-6 animate-spin" />
                         ) : isRecording ? (
                             <MicOff className="h-6 w-6" />
