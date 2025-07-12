@@ -10,6 +10,7 @@ export interface WeatherData {
       temperature: number;
       humidity: number;
       windSpeed: number;
+      condition: string;
     };
     forecast: {
       day: string;
@@ -34,7 +35,7 @@ export async function getAIFarmTip(input: WeatherBasedFarmTipInput): Promise<Wea
 }
 
 export async function getRealtimeWeather(location: string): Promise<WeatherData> {
-    const apiKey = "d62e775d50dd4a7887e62124251107";
+    const apiKey = process.env.WEATHER_API_KEY;
     if (!apiKey) {
       throw new Error("Weather API key is not configured.");
     }
@@ -42,7 +43,7 @@ export async function getRealtimeWeather(location: string): Promise<WeatherData>
     const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${location}&days=7&aqi=no&alerts=no`;
   
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, { next: { revalidate: 3600 }}); // Revalidate every hour
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Weather API Error:", errorData);
@@ -50,10 +51,17 @@ export async function getRealtimeWeather(location: string): Promise<WeatherData>
       }
       const data = await response.json();
   
-      const formatDay = (dateStr: string, index: number) => {
+      const formatDay = (dateStr: string, index: number, timezone: string) => {
         if (index === 0) return 'Today';
-        if (index === 1) return 'Tomorrow';
-        return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long' });
+        const date = new Date(dateStr);
+        if (index === 1) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            if (date.getDate() === tomorrow.getDate()) {
+                return 'Tomorrow'
+            }
+        }
+        return new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: timezone }).format(date);
       };
 
       return {
@@ -61,9 +69,10 @@ export async function getRealtimeWeather(location: string): Promise<WeatherData>
           temperature: data.current.temp_c,
           humidity: data.current.humidity,
           windSpeed: data.current.wind_kph,
+          condition: data.current.condition.text,
         },
         forecast: data.forecast.forecastday.map((day: any, index: number) => ({
-          day: formatDay(day.date, index),
+          day: formatDay(day.date, index, data.location.tz_id),
           condition: day.day.condition.text,
           high: Math.round(day.day.maxtemp_c),
           low: Math.round(day.day.mintemp_c),
