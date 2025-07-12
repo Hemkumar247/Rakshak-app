@@ -78,7 +78,7 @@ export function MarketCard() {
           <DollarSign className="text-accent" />
           {t('marketFactors')}
         </CardTitle>
-        <CardDescription>Today's price changes (Demo)</CardDescription>
+        <CardDescription>Today's price changes</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col flex-grow">
         {renderContent()}
