@@ -132,7 +132,7 @@ export function WeatherCard() {
         return <p className="text-sm text-center text-destructive">{error || "No data available."}</p>;
     }
 
-    const forecast = weatherData.forecast.slice(0, 5).map((day, index) => {
+    const forecast = weatherData.forecast.slice(0, 5).map((day) => {
         let shortDay: string;
         if (day.day === 'Today' || day.day === 'Tomorrow') {
             shortDay = day.day;
