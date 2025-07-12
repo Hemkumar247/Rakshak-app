@@ -134,13 +134,11 @@ export function WeatherCard() {
 
     const forecast = weatherData.forecast.slice(0, 5).map((day, index) => {
         let shortDay: string;
-        if (index === 0) {
-            shortDay = 'Today';
-        } else if (index === 1) {
-            shortDay = 'Tomorrow';
+        if (day.day === 'Today' || day.day === 'Tomorrow') {
+            shortDay = day.day;
         } else {
-            // Use the original full day name from the action which is already formatted
-            shortDay = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(new Date(day.day));
+            // Abbreviate the day name, e.g., "Wednesday" -> "Wed"
+            shortDay = day.day.substring(0, 3);
         }
         return {
             ...day,
