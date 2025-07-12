@@ -8,7 +8,7 @@
  *
  * @exports smartCropSuggestions - The main function to trigger the crop suggestion flow.
  * @exports SmartCropSuggestionsInput - The input type for the smartCropSuggestions function.
- * @exports SmartCropSuggestionsOutput - The output type for the smartCropSuggestions function.
+ * @exports SmartCropSuggestionsOutput - The output type for the smartCropSuggestionsOutput function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -25,7 +25,6 @@ export type SmartCropSuggestionsInput = z.infer<typeof SmartCropSuggestionsInput
 const CropRecommendationSchema = z.object({
     cropName: z.string().describe('The name of the suggested crop.'),
     reasoning: z.array(z.string()).describe('A short, crisp list of reasons why this crop is a good choice.'),
-    imageQuery: z.string().describe('A one or two-word query for a stock photo of this crop.'),
     imageDataUri: z.string().describe("A generated image of the crop, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'.").optional(),
 });
 
@@ -83,7 +82,7 @@ const smartCropSuggestionsFlow = ai.defineFlow(
       try {
         const {media} = await ai.generate({
           model: 'googleai/gemini-2.0-flash-preview-image-generation',
-          prompt: `A vibrant, high-quality photo of ${rec.imageQuery} growing in a field, suitable for an agricultural advisory app.`,
+          prompt: `A vibrant, high-quality photo of ${rec.cropName} growing in a field, suitable for an agricultural advisory app.`,
           config: {
             responseModalities: ['TEXT', 'IMAGE'],
           },

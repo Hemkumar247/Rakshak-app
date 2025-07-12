@@ -183,7 +183,7 @@ export default function CropSuggestionsPage() {
                             alt={rec.cropName} 
                             layout="fill" 
                             objectFit="cover"
-                            data-ai-hint={rec.imageQuery}
+                            data-ai-hint={rec.cropName}
                             unoptimized={rec.imageDataUri?.startsWith('data:image')}
                         />
                     </div>
