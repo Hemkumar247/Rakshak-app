@@ -10,12 +10,14 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { getMarketPriceData, type PriceData } from '@/services/market-price-service';
+import { getCommodityPriceData, type PriceData } from '@/services/data-gov-service';
 import { z } from 'genkit';
 
 // Define Zod schemas for input and output
 const MarketAnalysisInputSchema = z.object({
-  cropName: z.string().describe('The name of the crop to be analyzed.'),
+  commodity: z.string().describe('The name of the crop to be analyzed.'),
+  state: z.string().describe('The state where the market is located.'),
+  market: z.string().describe('The specific market to analyze.'),
   harvestTime: z.string().describe("When the crop was harvested (e.g., 'just_now', '2_days_ago', '4_days_ago')."),
   cropCondition: z.string().describe("The current condition of the harvested crop (e.g., 'perfect', 'good', 'average', 'poor')."),
   language: z.string().describe("The language for the response (e.g., 'en' for English, 'hi' for Hindi)."),
@@ -23,7 +25,7 @@ const MarketAnalysisInputSchema = z.object({
 export type MarketAnalysisInput = z.infer<typeof MarketAnalysisInputSchema>;
 
 const MarketAnalysisOutputSchema = z.object({
-  cropName: z.string(),
+  commodity: z.string(),
   harvestTime: z.string(),
   cropCondition: z.string(),
   recommendation: z.enum(['Sell Now', 'Wait']).describe("The AI's final recommendation."),
@@ -39,24 +41,28 @@ export type MarketAnalysisOutput = z.infer<typeof MarketAnalysisOutputSchema>;
 
 // Define a Genkit Tool to fetch market price data.
 // The LLM will decide to use this tool to get the necessary data.
-const fetchMarketDataTool = ai.defineTool(
+const fetchCommodityPriceDataTool = ai.defineTool(
   {
-    name: 'fetchMarketPriceData',
-    description: 'Retrieves historical and current market price data for a specific crop.',
-    inputSchema: z.object({ crop: z.string() }),
+    name: 'fetchCommodityPriceData',
+    description: 'Retrieves historical and current market price data for a specific commodity from a specific market.',
+    inputSchema: z.object({ 
+        commodity: z.string(),
+        state: z.string(),
+        market: z.string(),
+    }),
     outputSchema: z.array(z.object({
       day: z.string(),
       price: z.number(),
     })),
   },
-  async (input) => await getMarketPriceData(input.crop)
+  async (input) => await getCommodityPriceData(input)
 );
 
 
 // Define the main prompt for the analysis
 const marketAnalysisPrompt = ai.definePrompt({
   name: 'marketAnalysisPrompt',
-  tools: [fetchMarketDataTool],
+  tools: [fetchCommodityPriceDataTool],
   input: { schema: z.object({
       ...MarketAnalysisInputSchema.shape,
       historicalPriceData: z.any(),
@@ -65,28 +71,26 @@ const marketAnalysisPrompt = ai.definePrompt({
       recommendation: z.enum(['Sell Now', 'Wait']),
       translatedRecommendation: z.string(),
       reasoning: z.string(),
-      predictedPriceToday: z.number(),
-      predictedPriceTomorrow: z.number(),
   }) },
   prompt: `You are an expert agricultural market analyst. Your goal is to advise a farmer on the best time to sell their harvested crops.
 
   Analyze the provided data:
   1.  **Price Trend**: Analyze the historical price data to identify a trend (upward, downward, or stable).
   2.  **Crop Urgency**: Assess the urgency to sell based on the crop's condition and harvest time. A 'poor' condition or older harvest requires a faster sale, even if the market trend is unfavorable. A 'perfect' condition crop can afford to wait for a better price.
-  3.  **Prediction**: Based on the trend, predict the prices for 'Today' and 'Tomorrow'.
-  4.  **Recommendation**: Make a clear recommendation: 'Sell Now' or 'Wait'.
+  3.  **Recommendation**: Make a clear recommendation: 'Sell Now' or 'Wait'.
       -   Recommend 'Sell Now' if the price is high and might drop, or if the crop condition is poor and risks spoilage.
       -   Recommend 'Wait' if the price trend is upward and the crop condition is good enough to last.
-  5.  **Reasoning**: Provide a short, clear justification for your recommendation in a single paragraph.
+  4.  **Reasoning**: Provide a short, clear justification for your recommendation in a single paragraph.
 
   All text output (reasoning, recommendation) must be in the requested language: {{language}}.
 
   Crop Details:
-  - Name: {{cropName}}
+  - Name: {{commodity}}
+  - Location: {{market}}, {{state}}
   - Harvested: {{harvestTime}}
   - Condition: {{cropCondition}}
   
-  Historical Price Data:
+  Historical Price Data (last 5 days):
   {{jsonStringify historicalPriceData}}
   `,
 });
@@ -100,19 +104,27 @@ export const marketAnalysis = ai.defineFlow(
   },
   async (input) => {
     // Manually call the tool to get historical data
-    const historicalPriceData = await fetchMarketDataTool({ crop: input.cropName });
+    const historicalPriceData = await fetchCommodityPriceDataTool({ 
+        commodity: input.commodity,
+        state: input.state,
+        market: input.market
+    });
+
+    if (historicalPriceData.length === 0) {
+        throw new Error(`No market data found for ${input.commodity} in ${input.market}, ${input.state}. Please check your inputs or try a different market.`);
+    }
 
     // Call the prompt with the historical data in the input
     const llmResponse = await marketAnalysisPrompt({
       ...input,
-      historicalPriceData: historicalPriceData.slice(0, historicalPriceData.length -1) // Exclude today's mock price
+      historicalPriceData,
     });
     const analysis = llmResponse.output!;
     
     // Combine historical data with AI predictions
-    const combinedPriceData: PriceData[] = historicalPriceData.slice(0, historicalPriceData.length - 1);
-    combinedPriceData.push({ day: 'Today', price: analysis.predictedPriceToday });
-    combinedPriceData.push({ day: 'Tomorrow', price: analysis.predictedPriceTomorrow });
+    // For now, we will just use the historical data for the chart.
+    // A future improvement could involve having the AI predict future prices.
+    const combinedPriceData: PriceData[] = historicalPriceData;
     
     // Map internal values to user-friendly text
     const harvestTimeText = {
@@ -130,7 +142,7 @@ export const marketAnalysis = ai.defineFlow(
 
 
     return {
-      cropName: input.cropName,
+      commodity: input.commodity,
       harvestTime: harvestTimeText,
       cropCondition: conditionText,
       recommendation: analysis.recommendation,

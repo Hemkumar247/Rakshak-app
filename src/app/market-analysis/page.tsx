@@ -32,7 +32,9 @@ import { useToast } from '@/hooks/use-toast';
 import { getMarketAnalysis, type MarketAnalysisOutput } from './actions';
 
 const formSchema = z.object({
-  cropName: z.string().min(2, "Crop name is required."),
+  commodity: z.string().min(2, "Crop name is required."),
+  state: z.string().min(2, "State is required."),
+  market: z.string().min(2, "Market is required."),
   harvestTime: z.string().min(1, "Harvest time is required."),
   cropCondition: z.string().min(1, "Crop condition is required."),
 });
@@ -48,7 +50,9 @@ export default function MarketAnalysisPage() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      cropName: "",
+      commodity: "",
+      state: "",
+      market: "",
       harvestTime: "",
       cropCondition: "",
     },
@@ -93,12 +97,38 @@ export default function MarketAnalysisPage() {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
                   control={form.control}
-                  name="cropName"
+                  name="commodity"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('cropName')}</FormLabel>
                       <FormControl>
                         <Input placeholder={t('cropNamePlaceholder')} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="state"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>State</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Maharashtra" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="market"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Market</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Pune" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -169,7 +199,7 @@ export default function MarketAnalysisPage() {
           {analysis && (
             <Card className="shadow-lg border-white/40">
               <CardHeader>
-                <CardTitle className="font-headline text-2xl">{t('resultsFor')} <span className="text-primary">{analysis.cropName}</span></CardTitle>
+                <CardTitle className="font-headline text-2xl">{t('resultsFor')} <span className="text-primary">{analysis.commodity}</span></CardTitle>
                 <CardDescription className="flex items-center gap-4 pt-2">
                     <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> {analysis.harvestTime}</span>
                     <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> {analysis.cropCondition}</span>
@@ -202,7 +232,7 @@ export default function MarketAnalysisPage() {
                                         borderColor: "hsl(var(--border))" 
                                     }}
                                     labelStyle={{ color: "hsl(var(--foreground))" }}
-                                    formatter={(value: number) => [`₹${value}`, t('pricePerQuintal')]}
+                                    formatter={(value: number) => [`₹${value.toFixed(2)}`, t('pricePerQuintal')]}
                                 />
                                 <Bar dataKey="price" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                             </RechartsBarChart>
