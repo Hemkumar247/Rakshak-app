@@ -1,10 +1,11 @@
 // src/lib/auth.tsx
 "use client";
 
-import React, { createContext, useState, useContext, useMemo, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { onAuthStateChanged, User } from "firebase/auth";
-import { auth } from "./firebase";
+import { auth, db } from "./firebase";
 import { Loader2 } from 'lucide-react';
+import { collection, getDocs, writeBatch, serverTimestamp } from 'firebase/firestore';
 
 // Mock user data for the demo
 export const mockUsers = [
@@ -29,6 +30,56 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// A one-time flag to ensure seeding doesn't happen on every render
+let hasSeeded = false;
+
+async function seedInitialMessages() {
+    if (hasSeeded) return;
+    hasSeeded = true; // Set flag immediately to prevent race conditions
+
+    try {
+        const messagesCollection = collection(db, 'community_messages');
+        const snapshot = await getDocs(messagesCollection);
+
+        if (snapshot.empty) {
+            console.log("Seeding initial community messages...");
+            const batch = writeBatch(db);
+            const demoMessages = [
+                {
+                    user: mockUsers[1], // Sunita Sharma
+                    text: "The weather forecast looks great for planting this week! Anyone else getting their fields ready?",
+                },
+                {
+                    user: mockUsers[2], // Rajesh Patel
+                    text: "I'm having some trouble with pests on my tomato plants. Any advice on organic pesticides?",
+                },
+                {
+                    user: mockUsers[0], // Amit Kumar
+                    text: "@Rajesh Patel, have you tried a neem oil spray? It worked well for me last season.",
+                },
+            ];
+
+            demoMessages.forEach(msg => {
+                const docRef = collection(db, 'community_messages');
+                batch.set(docRef.doc(), {
+                    text: msg.text,
+                    senderId: msg.user.uid,
+                    senderName: msg.user.displayName,
+                    senderPhotoURL: msg.user.photoURL,
+                    timestamp: serverTimestamp(),
+                });
+            });
+
+            await batch.commit();
+            console.log("Demo messages seeded successfully.");
+        }
+    } catch (error) {
+        console.error("Error seeding initial messages:", error);
+        hasSeeded = false; // Reset flag on error to allow retry
+    }
+}
+
+
 // This is a simplified AuthProvider for demonstration purposes.
 // In a real app, you would integrate this with Firebase Auth UI or custom login flows.
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -42,6 +93,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setTimeout(() => {
         setCurrentUser(mockUsers[0]); // Default to Amit Kumar
         setLoading(false);
+        seedInitialMessages();
     }, 1000); // Simulate loading
   }, []);
 
