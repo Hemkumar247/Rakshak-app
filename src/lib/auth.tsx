@@ -5,7 +5,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth, db } from "./firebase";
 import { Loader2 } from 'lucide-react';
-import { collection, getDocs, writeBatch, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, writeBatch, serverTimestamp, doc } from 'firebase/firestore';
 
 // Mock user data for the demo
 export const mockUsers = [
@@ -60,8 +60,8 @@ async function seedInitialMessages() {
             ];
 
             demoMessages.forEach(msg => {
-                const docRef = collection(db, 'community_messages');
-                batch.set(docRef.doc(), {
+                const newDocRef = doc(messagesCollection); // Correctly create a new doc ref
+                batch.set(newDocRef, {
                     text: msg.text,
                     senderId: msg.user.uid,
                     senderName: msg.user.displayName,
