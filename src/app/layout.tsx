@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { AppLayout } from '@/components/app-layout';
 import { LanguageProvider } from '@/lib/i18n';
 import { Toaster } from '@/components/ui/toaster';
+import { AuthProvider } from '@/lib/auth';
 
 export const metadata: Metadata = {
   title: 'Rakshak',
@@ -27,8 +28,10 @@ export default function RootLayout({
       </head>
       <body className={cn('font-body antialiased min-h-screen')}>
         <LanguageProvider>
-          <AppLayout>{children}</AppLayout>
-          <Toaster />
+          <AuthProvider>
+            <AppLayout>{children}</AppLayout>
+            <Toaster />
+          </AuthProvider>
         </LanguageProvider>
       </body>
     </html>

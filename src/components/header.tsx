@@ -1,8 +1,9 @@
+// src/components/header.tsx
 "use client";
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User, Sprout, Sun, HeartPulse, ScrollText } from 'lucide-react';
+import { User, Sprout, Sun, HeartPulse, ScrollText, MessageSquare } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -27,7 +28,7 @@ export function Header() {
     { href: '/crop-suggestions', label: t('cropSuggestions'), icon: Sprout },
     { href: '/agronomic-tips', label: t('plantDiagnosis'), icon: HeartPulse },
     { href: '/weather', label: t('weather'), icon: Sun },
-    { href: '/schemes', label: t('governmentSchemes'), icon: ScrollText },
+    { href: '/community', label: 'Community', icon: MessageSquare },
   ];
 
   return (
@@ -43,7 +44,7 @@ export function Header() {
                 href={item.href}
                 className={cn(
                   "nav-link relative",
-                  pathname === item.href ? "text-primary font-semibold" : "text-foreground/80"
+                  pathname.startsWith(item.href) ? "text-primary font-semibold" : "text-foreground/80"
                 )}
               >
                 {item.label}
