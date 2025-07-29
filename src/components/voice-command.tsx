@@ -148,7 +148,7 @@ export function VoiceCommand() {
     <TooltipProvider>
         <Tooltip>
             <TooltipTrigger asChild>
-                <div className="fixed bottom-6 right-6 z-50">
+                <div className="fixed bottom-6 left-6 z-50">
                     <Button
                         size="icon"
                         className={`h-14 w-14 rounded-full shadow-lg transition-all duration-300 ${isRecording ? 'bg-red-600 hover:bg-red-700 animate-pulse' : 'bg-primary hover:bg-accent hover:text-accent-foreground'}`}
@@ -168,7 +168,7 @@ export function VoiceCommand() {
                     </Button>
                 </div>
             </TooltipTrigger>
-            <TooltipContent side="left" className="mb-2">
+            <TooltipContent side="right" className="mb-2">
                 <p>{getTooltipContent()}</p>
             </TooltipContent>
         </Tooltip>
