@@ -29,6 +29,17 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+// Simple hashing function to create a deterministic "random" number from a string.
+const deterministicHash = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
+};
+
 export default function SatelliteAnalysisPage() {
   const { t } = useLanguage();
   const { toast } = useToast();
@@ -49,10 +60,13 @@ export default function SatelliteAnalysisPage() {
     // Simulate fetching data from a backend service that uses Google Earth Engine
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // In a real app, the backend would return a real satellite image URL and NDVI value.
+    // Use a deterministic hash of the coordinates to generate a consistent NDVI value
+    const hash = deterministicHash(values.coordinates);
+    const deterministicNdvi = ((hash % 600) / 1000) + 0.2; // Generates a value between 0.2 and 0.8
+
     setAnalysisResult({
         imageUrl: `https://placehold.co/800x600.png`,
-        ndvi: Math.random() * (0.8 - 0.2) + 0.2, // Random NDVI value between 0.2 and 0.8
+        ndvi: deterministicNdvi,
     });
 
     toast({
@@ -167,4 +181,3 @@ export default function SatelliteAnalysisPage() {
     </div>
   );
 }
-
