@@ -38,8 +38,8 @@ async function seedInitialMessages() {
     hasSeeded = true; // Set flag immediately to prevent race conditions
 
     try {
-        const messagesCollection = collection(db, 'community_messages');
-        const snapshot = await getDocs(messagesCollection);
+        const messagesCollectionRef = collection(db, 'community_messages');
+        const snapshot = await getDocs(messagesCollectionRef);
 
         if (snapshot.empty) {
             console.log("Seeding initial community messages...");
@@ -60,7 +60,7 @@ async function seedInitialMessages() {
             ];
 
             demoMessages.forEach(msg => {
-                const newDocRef = doc(messagesCollection); // Correctly create a new doc ref
+                const newDocRef = doc(messagesCollectionRef); // Correctly create a new doc ref
                 batch.set(newDocRef, {
                     text: msg.text,
                     senderId: msg.user.uid,
