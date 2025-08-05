@@ -1,9 +1,10 @@
+
 // src/components/header.tsx
 "use client";
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User, Sprout, Sun, HeartPulse, ScrollText, MessageSquare } from 'lucide-react';
+import { User, Sprout, Sun, HeartPulse, ScrollText, MessageSquare, Satellite } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -28,6 +29,7 @@ export function Header() {
     { href: '/crop-suggestions', label: t('cropSuggestions'), icon: Sprout },
     { href: '/agronomic-tips', label: t('plantDiagnosis'), icon: HeartPulse },
     { href: '/weather', label: t('weather'), icon: Sun },
+    { href: '/satellite-analysis', label: t('satelliteAnalysis'), icon: Satellite },
     { href: '/community', label: 'Community', icon: MessageSquare },
   ];
 
@@ -108,3 +110,4 @@ export function Header() {
     </header>
   );
 }
+

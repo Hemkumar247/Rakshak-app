@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useState, useContext, useMemo, useEffect } from 'react';
@@ -23,6 +24,9 @@ const translations = {
     sendMessage: 'Send Message',
     subjectPlaceholder: 'How can we help?',
     messagePlaceholder: 'Describe your issue or question here.',
+    newAnalysis: 'New Analysis',
+    analysisResult: 'Analysis Result',
+    resultsAppearHere: 'Your results will appear here.',
 
 
     // Sidebar
@@ -35,6 +39,7 @@ const translations = {
     profile: 'Profile',
     settings: 'Settings',
     support: 'Support',
+    satelliteAnalysis: 'Satellite Analysis',
 
     // Dashboard
     welcome: 'Welcome, Farmer!',
@@ -57,14 +62,12 @@ const translations = {
     // Plant Diagnosis
     plantDiagnosisTitle: 'Rakshak AI',
     plantDiagnosisDescription: 'Upload a photo of your plant to get an AI-powered diagnosis and treatment plan.',
-    newDiagnosis: 'New Diagnosis',
     plantPhoto: 'Plant Photo',
     uploadInstruction: 'Click to upload or drag and drop',
     uploadSubtext: 'PNG, JPG, or WEBP',
     optionalNotes: 'Optional Notes',
     optionalNotesPlaceholder: 'e.g., "Leaves are yellowing", "I see white spots"...',
     getDiagnosis: 'Get Diagnosis',
-    diagnosisResult: 'Diagnosis Result',
     aiAnalyzing: 'Rakshak AI is analyzing...',
     notAPlantTitle: 'Not a Plant',
     notAPlantDescription: "The AI couldn't detect a plant in the image. Please try another photo.",
@@ -72,7 +75,6 @@ const translations = {
     diagnosis: 'Diagnosis',
     treatment: 'Treatment Plan',
     prevention: 'Prevention Tips',
-    resultsAppearHere: 'Your diagnosis results will appear here.',
     uploadToStart: 'Upload a plant photo to get started.',
 
     // Market Analysis
@@ -100,6 +102,16 @@ const translations = {
     resultsFor: 'Results for',
     enterDetails: 'Enter your crop details to get an analysis.',
     pricePerQuintal: 'Price/Quintal',
+
+    // Satellite Analysis
+    satelliteAnalysisTitle: 'Satellite Field Analysis',
+    satelliteAnalysisDescription: 'Get a satellite view of your farm to analyze crop health (NDVI).',
+    farmCoordinates: 'Farm Coordinates',
+    analyzeField: 'Analyze Field',
+    fetchingSatellite: 'Fetching satellite data...',
+    satelliteImage: 'Satellite Image',
+    vegetationHealth: 'Vegetation Health',
+    enterCoordinatesToStart: 'Enter coordinates to see your field analysis.',
 
     // Data Visualization (Old)
     dataVisualizationTitle: 'Historical Data Insights',
@@ -163,6 +175,9 @@ const translations = {
     sendMessage: 'संदेश भेजें',
     subjectPlaceholder: 'हम आपकी मदद कैसे कर सकते हैं?',
     messagePlaceholder: 'अपनी समस्या या प्रश्न का यहाँ वर्णन करें।',
+    newAnalysis: 'नया विश्लेषण',
+    analysisResult: 'विश्लेषण परिणाम',
+    resultsAppearHere: 'आपके परिणाम यहाँ दिखाई देंगे।',
 
     // Sidebar
     dashboard: 'डैशबोर्ड',
@@ -174,6 +189,8 @@ const translations = {
     profile: 'प्रोफ़ाइल',
     settings: 'सेटिंग्स',
     support: 'सहायता',
+    satelliteAnalysis: 'सैटेलाइट विश्लेषण',
+
 
     // Dashboard
     welcome: 'किसान, आपका स्वागत है!',
@@ -196,7 +213,6 @@ const translations = {
     // Plant Diagnosis
     plantDiagnosisTitle: 'रक्षक AI',
     plantDiagnosisDescription: 'AI-संचालित निदान और उपचार योजना प्राप्त करने के लिए अपने पौधे की एक तस्वीर अपलोड करें।',
-    newDiagnosis: 'नया निदान',
     plantPhoto: 'पौधे की तस्वीर',
     uploadInstruction: 'अपलोड करने के लिए क्लिक करें या खींचें और छोड़ें',
     uploadSubtext: 'PNG, JPG, या WEBP',
@@ -211,7 +227,6 @@ const translations = {
     diagnosis: 'निदान',
     treatment: 'उपचार योजना',
     prevention: 'रोकथाम के उपाय',
-    resultsAppearHere: 'आपके निदान के परिणाम यहां दिखाई देंगे।',
     uploadToStart: 'शुरू करने के लिए पौधे की तस्वीर अपलोड करें।',
 
     // Market Analysis
@@ -239,6 +254,16 @@ const translations = {
     resultsFor: 'के लिए परिणाम',
     enterDetails: 'विश्लेषण प्राप्त करने के लिए अपनी फसल का विवरण दर्ज करें।',
     pricePerQuintal: 'मूल्य/क्विंटल',
+
+    // Satellite Analysis
+    satelliteAnalysisTitle: 'सैटेलाइट खेत विश्लेषण',
+    satelliteAnalysisDescription: 'फसल स्वास्थ्य (NDVI) का विश्लेषण करने के लिए अपने खेत का सैटेलाइट दृश्य प्राप्त करें।',
+    farmCoordinates: 'खेत के निर्देशांक',
+    analyzeField: 'खेत का विश्लेषण करें',
+    fetchingSatellite: 'सैटेलाइट डेटा लाया जा रहा है...',
+    satelliteImage: 'सैटेलाइट छवि',
+    vegetationHealth: 'वनस्पति स्वास्थ्य',
+    enterCoordinatesToStart: 'अपना खेत विश्लेषण देखने के लिए निर्देशांक दर्ज करें।',
 
     // Data Visualization (Old)
     dataVisualizationTitle: 'ऐतिहासिक डेटा अंतर्दृष्टि',
@@ -302,6 +327,9 @@ const translations = {
     sendMessage: 'செய்தி அனுப்பு',
     subjectPlaceholder: 'நாங்கள் எப்படி உதவ முடியும்?',
     messagePlaceholder: 'உங்கள் சிக்கல் அல்லது கேள்வியை இங்கே விவரிக்கவும்.',
+    newAnalysis: 'புதிய பகுப்பாய்வு',
+    analysisResult: 'பகுப்பாய்வு முடிவு',
+    resultsAppearHere: 'உங்கள் முடிவுகள் இங்கே தோன்றும்.',
 
     // Sidebar
     dashboard: 'டாஷ்போர்டு',
@@ -313,6 +341,7 @@ const translations = {
     profile: 'சுயவிவரம்',
     settings: 'அமைப்புகள்',
     support: 'ஆதரவு',
+    satelliteAnalysis: 'செயற்கைக்கோள் பகுப்பாய்வு',
 
     // Dashboard
     welcome: 'விவசாயி, வருக!',
@@ -335,7 +364,6 @@ const translations = {
     // Plant Diagnosis
     plantDiagnosisTitle: 'ரக்ஷக் AI',
     plantDiagnosisDescription: 'AI-இயங்கும் நோய் கண்டறிதல் மற்றும் சிகிச்சை திட்டத்தைப் பெற உங்கள் தாவரத்தின் புகைப்படத்தைப் பதிவேற்றவும்.',
-    newDiagnosis: 'புதிய கண்டறிதல்',
     plantPhoto: 'தாவரத்தின் புகைப்படம்',
     uploadInstruction: 'பதிவேற்ற கிளிக் செய்யவும் அல்லது இழுத்து விடவும்',
     uploadSubtext: 'PNG, JPG, அல்லது WEBP',
@@ -350,7 +378,6 @@ const translations = {
     diagnosis: 'நோய் கண்டறிதல்',
     treatment: 'சிகிச்சை திட்டம்',
     prevention: 'தடுப்பு குறிப்புகள்',
-    resultsAppearHere: 'உங்கள் நோய் கண்டறிதல் முடிவுகள் இங்கே தோன்றும்.',
     uploadToStart: 'தொடங்குவதற்கு ஒரு தாவர புகைப்படத்தை பதிவேற்றவும்.',
 
     // Market Analysis
@@ -378,6 +405,16 @@ const translations = {
     resultsFor: 'க்கான முடிவுகள்',
     enterDetails: 'ஒரு பகுப்பாய்வைப் பெற உங்கள் பயிர் விவரங்களை உள்ளிடவும்.',
     pricePerQuintal: 'விலை/குவிண்டால்',
+
+    // Satellite Analysis
+    satelliteAnalysisTitle: 'செயற்கைக்கோள் புலம் பகுப்பாய்வு',
+    satelliteAnalysisDescription: 'பயிர் ஆரோக்கியத்தை (NDVI) பகுப்பாய்வு செய்ய உங்கள் பண்ணையின் செயற்கைக்கோள் பார்வையைப் பெறுங்கள்.',
+    farmCoordinates: 'பண்ணை ஆயத்தொலைவுகள்',
+    analyzeField: 'புலத்தை பகுப்பாய்வு செய்',
+    fetchingSatellite: 'செயற்கைக்கோள் தரவு பெறப்படுகிறது...',
+    satelliteImage: 'செயற்கைக்கோள் படம்',
+    vegetationHealth: 'தாவர ஆரோக்கியம்',
+    enterCoordinatesToStart: 'உங்கள் புலம் பகுப்பாய்வைக் காண ஆயத்தொலைவுகளை உள்ளிடவும்.',
 
     // Data Visualization (Old)
     dataVisualizationTitle: 'வரலாற்று தரவு நுண்ணறிவு',
