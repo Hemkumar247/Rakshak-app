@@ -32,6 +32,9 @@ export function LanguageSwitcher() {
         <DropdownMenuItem onClick={() => setLanguage('ta')} disabled={language === 'ta'}>
           தமிழ் (Tamil)
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setLanguage('ml')} disabled={language === 'ml'}>
+          മലയാളം (Malayalam)
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

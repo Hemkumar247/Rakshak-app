@@ -3,7 +3,7 @@
 
 import React, { createContext, useState, useContext, useMemo, useEffect } from 'react';
 
-type Language = 'en' | 'hi' | 'ta';
+type Language = 'en' | 'hi' | 'ta' | 'ml';
 
 export const translations = {
   en: {
@@ -458,7 +458,7 @@ export const translations = {
     humidity: 'ஈரப்பதம்',
     windSpeed: 'காற்றின் வேகம்',
     visibility: 'பார்வைநிலை',
-    sevenDayForecast: 'Farming Forecast',
+    sevenDayForecast: 'விவசாய முன்னறிவிப்பு',
     rainChance: 'மழை வாய்ப்பு',
 
     // Profile Page
@@ -483,6 +483,162 @@ export const translations = {
     contactSupport: 'ஆதரவைத் தொடர்பு கொள்ளவும்',
     contactSupportDescription: 'கீழேயுள்ள படிவத்தை நிரப்பவும், நாங்கள் விரைவில் உங்களைத் தொடர்புகொள்வோம்.',
 
+  },
+  ml: {
+    // General
+    appName: 'രക്ഷക്',
+    loading: 'ലോഡ് ചെയ്യുന്നു...',
+    submit: 'സമർപ്പിക്കുക',
+    noInfo: 'വിവരങ്ങൾ ലഭ്യമല്ല.',
+    errorTitle: 'പിശക്',
+    errorDescription: 'എന്തോ പിശക് സംഭവിച്ചു. ദയവായി വീണ്ടും ശ്രമിക്കുക.',
+    learnMore: 'കൂടുതലറിയുക',
+    eligibility: 'യോഗ്യത',
+    name: 'പേര്',
+    email: 'ഇമെയിൽ',
+    saveChanges: 'മാറ്റങ്ങൾ സംരക്ഷിക്കുക',
+    subject: 'വിഷയം',
+    message: 'സന്ദേശം',
+    sendMessage: 'സന്ദേശം അയക്കുക',
+    subjectPlaceholder: 'ഞങ്ങൾ എങ്ങനെ സഹായിക്കും?',
+    messagePlaceholder: 'നിങ്ങളുടെ പ്രശ്നം ഇവിടെ വിവരിക്കുക.',
+    newAnalysis: 'പുതിയ വിശകലനം',
+    analysisResult: 'വിശകലന ഫലം',
+    resultsAppearHere: 'നിങ്ങളുടെ ഫലങ്ങൾ ഇവിടെ ദൃശ്യമാകും.',
+
+    // Sidebar
+    dashboard: 'ഡാഷ്ബോർഡ്',
+    cropSuggestions: 'വിള നിർദ്ദേശങ്ങൾ',
+    plantDiagnosis: 'സസ്യ രോഗനിർണയം',
+    marketAnalysis: 'വിപണി വിശകലനം',
+    governmentSchemes: 'സർക്കാർ പദ്ധതികൾ',
+    weather: 'കാലാവസ്ഥാ പ്രവചനം',
+    profile: 'പ്രൊഫൈൽ',
+    settings: 'ക്രമീകരണങ്ങൾ',
+    support: 'പിന്തുണ',
+    satelliteAnalysis: 'ഉപഗ്രഹ വിശകലനം',
+
+    // Dashboard
+    welcome: 'കർഷകാ, സ്വാഗതം!',
+    dashboardDescription: 'നിങ്ങളുടെ ഫാമിന്റെ നിലവിലെ അവസ്ഥയുടെ ഒരു അവലോകനം.',
+    marketFactors: 'വിപണി ഘടകങ്ങൾ',
+    geographicalConditions: 'ഭൂമിശാസ്ത്രപരമായ അവസ്ഥകൾ',
+    currentTemp: 'നിലവിൽ: 22°C, വെയിൽ',
+    soilPh: 'മണ്ണിന്റെ പി.എച്ച്',
+    elevation: 'ഉയരം',
+    schemesDescription: 'നിങ്ങൾക്കുള്ള ആനുകൂല്യങ്ങളും സബ്സിഡികളും',
+    wheat: 'ഗോതമ്പ്',
+    potato: 'ഉരുളക്കിഴങ്ങ്',
+    onion: 'ഉള്ളി',
+    tomato: 'തക്കാളി',
+    soybean: 'സോയാബീൻ',
+    cotton: 'പരുത്തി',
+
+    // Crop Suggestions
+    cropSuggestionsTitle: 'മികച്ച വിള നിർദ്ദേശങ്ങൾ',
+    cropSuggestionsDescription: 'മികച്ച ശുപാർശകൾക്കായി AI നിങ്ങളുടെ സ്ഥാനവും നിലവിലെ കാലാവസ്ഥയും വിശകലനം ചെയ്യും.',
+    farmLocation: 'ഫാമിന്റെ സ്ഥാനം',
+    farmLocationPlaceholder: 'ഉദാ: അക്ഷാംശം, രേഖാംശം, അല്ലെങ്കിൽ വിലാസം',
+    getSuggestions: 'നിർദ്ദേശങ്ങൾ നേടുക',
+    recommendations: 'ഞങ്ങളുടെ ശുപാർശകൾ',
+    
+    // Plant Diagnosis
+    plantDiagnosisTitle: 'രക്ഷക് AI',
+    plantDiagnosisDescription: 'AI-യുടെ സഹായത്തോടെ രോഗനിർണയവും ചികിത്സാ പദ്ധതിയും ലഭിക്കാൻ നിങ്ങളുടെ സസ്യത്തിന്റെ ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക.',
+    plantPhoto: 'സസ്യത്തിന്റെ ഫോട്ടോ',
+    uploadInstruction: 'അപ്‌ലോഡ് ചെയ്യാൻ ക്ലിക്ക് ചെയ്യുക അല്ലെങ്കിൽ വലിച്ചിടുക',
+    uploadSubtext: 'PNG, JPG, അല്ലെങ്കിൽ WEBP',
+    optionalNotes: 'ഓപ്ഷണൽ കുറിപ്പുകൾ',
+    optionalNotesPlaceholder: 'ഉദാ: "ഇലകൾ മഞ്ഞളിക്കുന്നു", "വെളുത്ത പാടുകൾ കാണുന്നു"...',
+    getDiagnosis: 'രോഗനിർണയം നേടുക',
+    aiAnalyzing: 'രക്ഷക് AI വിശകലനം ചെയ്യുന്നു...',
+    notAPlantTitle: 'ഇതൊരു സസ്യമല്ല',
+    notAPlantDescription: 'ചിത്രത്തിൽ ഒരു സസ്യത്തെ കണ്ടെത്താൻ AI-ക്ക് കഴിഞ്ഞില്ല. ദയവായി മറ്റൊരു ഫോട്ടോ ശ്രമിക്കുക.',
+    healthy: 'ആരോഗ്യമുള്ള',
+    diagnosis: 'രോഗനിർണയം',
+    treatment: 'ചികിത്സാ പദ്ധതി',
+    prevention: 'പ്രതിരോധ മാർഗ്ഗങ്ങൾ',
+    uploadToStart: 'ആരംഭിക്കുന്നതിന് ഒരു സസ്യത്തിന്റെ ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക.',
+
+    // Market Analysis
+    marketAnalysisTitle: 'വിപണി വില വിശകലനം',
+    marketAnalysisDescription: 'നിങ്ങളുടെ വിളകളുടെ ഏറ്റവും പുതിയ വിപണി വിലകൾ നേടുക.',
+    cropName: 'വിളയുടെ പേര്',
+    cropNamePlaceholder: 'ഉദാ: ഗോതമ്പ്, തക്കാളി, സോയാബീൻ',
+    harvestTime: 'വിളവെടുപ്പ് സമയം',
+    harvestTimeJustNow: 'ഇപ്പോൾ വിളവെടുത്തത്',
+    harvestTime2Days: '2 ദിവസം മുൻപ് വിളവെടുത്തത്',
+    harvestTime4Days: '4 ദിവസം മുൻപ് വിളവെടുത്തത്',
+    cropCondition: 'വിളയുടെ അവസ്ഥ',
+    conditionPerfect: 'വളരെ നല്ലത്',
+    conditionGood: 'നല്ലത്',
+    conditionAverage: 'ശരാശരി',
+    conditionPoor: 'விரைவில் கெட்டுப்போகும் அபாயம்',
+    getAnalysis: 'വിശകലനം നേടുക',
+    analysisResults: 'വിശകലന ഫലങ്ങൾ',
+    priceTrend: 'വില പ്രവണത (അടുത്ത 2 ദിവസം)',
+    recommendation: 'ശുപാർശ',
+    reasoning: 'കാരണം',
+    sellNow: 'ഇപ്പോൾ വിൽക്കുക',
+    wait: 'കാത്തിരിക്കുക',
+    aiAnalyzingPrices: 'AI വിപണി വിലകൾ വിശകലനം ചെയ്യുന്നു...',
+    resultsFor: 'ഫലങ്ങൾ',
+    enterDetails: 'വിശകലനം ലഭിക്കാൻ നിങ്ങളുടെ വിളയുടെ വിവരങ്ങൾ നൽകുക.',
+    pricePerQuintal: 'ക്വിന്റലിന് വില',
+
+    // Satellite Analysis
+    satelliteAnalysisTitle: 'ഉപഗ്രഹ ഫീൽഡ് വിശകലനം',
+    satelliteAnalysisDescription: 'വിളയുടെ ആരോഗ്യം വിശകലനം ചെയ്യാൻ നിങ്ങളുടെ ഫാമിന്റെ AI-നിർമ്മിത ഉപഗ്രഹ ദൃശ്യം നേടുക.',
+    farmCoordinates: 'ഫാമിന്റെ കോർഡിനേറ്റുകൾ',
+    analyzeField: 'ഫീൽഡ് വിശകലനം ചെയ്യുക',
+    fetchingSatellite: 'AI നിങ്ങളുടെ ഉപഗ്രഹ വിശകലനം തയ്യാറാക്കുന്നു...',
+    satelliteImage: 'AI ഉപഗ്രഹ ദൃശ്യം',
+    vegetationHealth: 'സസ്യങ്ങളുടെ ആരോഗ്യം',
+    enterCoordinatesToStart: 'നിങ്ങളുടെ ഫീൽഡ് വിശകലനം കാണാൻ കോർഡിനേറ്റുകൾ നൽകുക.',
+    soilAnalysis: 'മണ്ണ് വിശകലനം',
+
+    // Data Visualization (Old)
+    dataVisualizationTitle: 'ചരിത്രപരമായ ഡാറ്റ ഉൾക്കാഴ്ചകൾ',
+    dataVisualizationDescription: 'കാലാവസ്ഥ, മണ്ണ്, വിപണി പ്രവണതകൾ എന്നിവ ട്രാക്ക് ചെയ്യുക.',
+    weatherHistory: 'കാലാവസ്ഥാ ചരിത്രം',
+    soilComposition: 'മണ്ണിന്റെ ഘടന',
+    marketTrendsChart: 'വിപണി പ്രവണതകൾ (വില/ക്വിന്റൽ)',
+    
+    // Schemes
+    schemesPageDescription: 'കർഷകർക്കായി ലഭ്യമായ സർക്കാർ പദ്ധതികളും സബ്സിഡികളും കണ്ടെത്തുക.',
+    
+    // Weather Page
+    weatherForecastTitle: 'കാർഷിക പ്രവചനം',
+    weatherForecastDescription: 'നിങ്ങളുടെ ആഴ്ച ആസൂത്രണം ചെയ്യാൻ സഹായിക്കുന്ന വിശദമായ കാലാവസ്ഥാ വിവരങ്ങൾ.',
+    currentConditions: 'നിലവിലെ അവസ്ഥ',
+    temperature: 'താപനില',
+    humidity: 'ഈർപ്പം',
+    windSpeed: 'കാറ്റിന്റെ വേഗത',
+    visibility: 'കാഴ്ച',
+    sevenDayForecast: 'കാർഷിക പ്രവചനം',
+    rainChance: 'മഴ സാധ്യത',
+
+    // Profile Page
+    profileDescription: 'നിങ്ങളുടെ സ്വകാര്യ വിവരങ്ങൾ കാണുക, എഡിറ്റ് ചെയ്യുക.',
+    profileDetails: 'പ്രൊഫൈൽ വിവരങ്ങൾ',
+    profileDetailsDescription: 'ഈ വിവരങ്ങൾ നിങ്ങളുടെ അനുഭവം വ്യക്തിഗതമാക്കാൻ ഉപയോഗിക്കും.',
+
+    // Settings Page
+    settingsDescription: 'നിങ്ങളുടെ ആപ്ലിക്കേഷൻ മുൻഗണനകൾ നിയന്ത്രിക്കുക.',
+    languageSettings: 'ഭാഷ',
+    languageSettingsDescription: 'ആപ്ലിക്കേഷന്റെ ഭാഷ തിരഞ്ഞെടുക്കുക.',
+    selectLanguage: 'ഭാഷ തിരഞ്ഞെടുക്കുക',
+    notificationSettings: 'അറിയിപ്പുകൾ',
+    notificationSettingsDescription: 'നിങ്ങൾക്ക് അലേർട്ടുകളും അപ്‌ഡേറ്റുകളും എങ്ങനെ ലഭിക്കണമെന്ന് നിയന്ത്രിക്കുക.',
+    emailNotifications: 'ഇമെയിൽ അറിയിപ്പുകൾ',
+    pushNotifications: 'പുഷ് അറിയിപ്പുകൾ',
+    earlyWarningSystem: 'മുൻകൂർ മുന്നറിയിപ്പ് സംവിധാനം',
+    earlyWarningSystemDescription: 'സർക്കാർ മുന്നറിയിപ്പുകൾക്കും പ്രകൃതി ദുരന്തങ്ങൾക്കും നിർണ്ണായകമായ അലേർട്ടുകൾ സ്വീകരിക്കുക.',
+
+    // Support Page
+    supportDescription: 'സഹായം വേണോ? ഞങ്ങളെ ബന്ധപ്പെടുക.',
+    contactSupport: 'പിന്തുണയുമായി ബന്ധപ്പെടുക',
+    contactSupportDescription: "താഴെയുള്ള ഫോം പൂരിപ്പിക്കുക, ഞങ്ങൾ ഉടൻ തന്നെ നിങ്ങളെ ബന്ധപ്പെടുന്നതാണ്.",
   },
 };
 
