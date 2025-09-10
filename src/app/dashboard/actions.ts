@@ -11,15 +11,15 @@ export interface MarketCardDataItem {
 
 // Fetches price data for a few key commodities to display on the dashboard market card.
 export async function getMarketCardData(): Promise<MarketCardDataItem[]> {
-  // For demo purposes, we are returning a hardcoded dataset.
+  // For demo purposes, we are returning a hardcoded dataset with translation keys.
   // This avoids issues with the live API not having recent data.
   const fakeData: MarketCardDataItem[] = [
-    { crop: 'Wheat', change: 1.5, status: 'up' },
-    { crop: 'Potato', change: -0.8, status: 'down' },
-    { crop: 'Onion', change: 2.1, status: 'up' },
-    { crop: 'Tomato', change: -0.2, status: 'down' },
-    { crop: 'Soybean', change: 0.5, status: 'up' },
-    { crop: 'Cotton', change: -1.2, status: 'down' },
+    { crop: 'wheat', change: 1.5, status: 'up' },
+    { crop: 'potato', change: -0.8, status: 'down' },
+    { crop: 'onion', change: 2.1, status: 'up' },
+    { crop: 'tomato', change: -0.2, status: 'down' },
+    { crop: 'soybean', change: 0.5, status: 'up' },
+    { crop: 'cotton', change: -1.2, status: 'down' },
   ];
 
   // Simulate network delay

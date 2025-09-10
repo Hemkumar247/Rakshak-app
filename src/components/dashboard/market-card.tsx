@@ -7,6 +7,7 @@ import { useLanguage } from '@/lib/i18n';
 import { DollarSign, ArrowUp, ArrowDown } from 'lucide-react';
 import { getMarketCardData, MarketCardDataItem } from '@/app/dashboard/actions';
 import { Skeleton } from '../ui/skeleton';
+import type { translations } from '@/lib/i18n';
 
 export function MarketCard() {
   const { t } = useLanguage();
@@ -59,7 +60,7 @@ export function MarketCard() {
       <ul className="space-y-3">
         {marketData.map(item => (
           <li key={item.crop} className="flex items-center justify-between">
-            <span className="font-medium">{item.crop}</span>
+            <span className="font-medium">{t(item.crop as keyof typeof translations.en)}</span>
             <div className={`flex items-center gap-1 font-semibold ${item.status === 'up' ? 'text-green-600' : item.status === 'down' ? 'text-red-600' : 'text-muted-foreground'}`}>
               {item.status === 'up' && <ArrowUp size={16} />}
               {item.status === 'down' && <ArrowDown size={16} />}

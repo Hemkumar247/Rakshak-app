@@ -5,7 +5,7 @@ import React, { createContext, useState, useContext, useMemo, useEffect } from '
 
 type Language = 'en' | 'hi' | 'ta';
 
-const translations = {
+export const translations = {
   en: {
     // General
     appName: 'Rakshak',
@@ -50,6 +50,12 @@ const translations = {
     soilPh: 'Soil pH',
     elevation: 'Elevation',
     schemesDescription: 'Benefits & subsidies for you',
+    wheat: 'Wheat',
+    potato: 'Potato',
+    onion: 'Onion',
+    tomato: 'Tomato',
+    soybean: 'Soybean',
+    cotton: 'Cotton',
 
     // Crop Suggestions
     cropSuggestionsTitle: 'Smart Crop Suggestions',
@@ -203,6 +209,12 @@ const translations = {
     soilPh: 'मिट्टी का पीएच',
     elevation: 'ऊंचाई',
     schemesDescription: 'आपके लिए लाभ और सब्सिडी',
+    wheat: 'गेहूँ',
+    potato: 'आलू',
+    onion: 'प्याज',
+    tomato: 'टमाटर',
+    soybean: 'सोयाबीन',
+    cotton: 'कपास',
     
     // Crop Suggestions
     cropSuggestionsTitle: 'स्मार्ट फसल सुझाव',
@@ -356,6 +368,12 @@ const translations = {
     soilPh: 'மண் pH',
     elevation: 'உயரம்',
     schemesDescription: 'உங்களுக்கான நன்மைகள் மற்றும் மானியங்கள்',
+    wheat: 'கோதுமை',
+    potato: 'உருளைக்கிழங்கு',
+    onion: 'வெங்காயம்',
+    tomato: 'தக்காளி',
+    soybean: 'சோயாபீன்',
+    cotton: 'பருத்தி',
     
     // Crop Suggestions
     cropSuggestionsTitle: 'ஸ்மார்ட் பயிர் பரிந்துரைகள்',
