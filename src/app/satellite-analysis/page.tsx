@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Map, Satellite, Loader2 } from 'lucide-react';
+import { Map, Satellite, Loader2, Leaf, CheckCircle } from 'lucide-react';
 import Image from 'next/image';
 
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useLanguage } from '@/lib/i18n';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { getSatelliteAnalysis } from './actions';
+import type { SatelliteFarmAnalysisOutput } from '@/ai/schemas/satellite-analysis-schema';
 
 const formSchema = z.object({
   coordinates: z.string().regex(/^-?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*-?((1[0-7]\d(\.\d+)?|([1-9]?\d)(\.\d+)?))$/, "Invalid coordinates. Please use 'lat, lon' format."),
@@ -29,21 +31,10 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-// Simple hashing function to create a deterministic "random" number from a string.
-const deterministicHash = (str: string) => {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash |= 0; // Convert to 32bit integer
-    }
-    return Math.abs(hash);
-};
-
 export default function SatelliteAnalysisPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { toast } = useToast();
-  const [analysisResult, setAnalysisResult] = useState<{imageUrl: string; ndvi: number} | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<SatelliteFarmAnalysisOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<FormValues>({
@@ -57,25 +48,85 @@ export default function SatelliteAnalysisPage() {
     setIsLoading(true);
     setAnalysisResult(null);
 
-    // Simulate fetching data from a backend service that uses Google Earth Engine
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Use a deterministic hash of the coordinates to generate a consistent NDVI value
-    const hash = deterministicHash(values.coordinates);
-    const deterministicNdvi = ((hash % 600) / 1000) + 0.2; // Generates a value between 0.2 and 0.8
-
-    setAnalysisResult({
-        imageUrl: `https://placehold.co/800x600.png`,
-        ndvi: deterministicNdvi,
-    });
-
-    toast({
-        title: "Analysis Complete",
-        description: "Satellite imagery processed successfully."
-    });
-
-    setIsLoading(false);
+    try {
+      const result = await getSatelliteAnalysis({ ...values, language });
+      setAnalysisResult(result);
+      toast({
+          title: "Analysis Complete",
+          description: "Satellite data processed successfully."
+      });
+    } catch (error) {
+       console.error("Failed to get satellite analysis:", error);
+       toast({
+        variant: "destructive",
+        title: t('errorTitle'),
+        description: t('errorDescription'),
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
+
+  const renderAnalysis = () => (
+     <div className="space-y-6">
+        <Tabs defaultValue="image" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="image">{t('satelliteImage')}</TabsTrigger>
+                <TabsTrigger value="health">{t('vegetationHealth')}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="image" className="mt-4">
+                <div className="relative w-full aspect-video rounded-md overflow-hidden border">
+                    <Image 
+                        src={analysisResult?.imageDataUri || `https://placehold.co/800x600.png`} 
+                        alt="Satellite view of the farm" 
+                        layout="fill" 
+                        objectFit="cover"
+                        unoptimized={analysisResult?.imageDataUri?.startsWith('data:image')}
+                        data-ai-hint="satellite farm"
+                    />
+                </div>
+            </TabsContent>
+            <TabsContent value="health" className="mt-4">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>NDVI (Vegetation Index)</CardTitle>
+                        <CardDescription>
+                            {analysisResult?.healthDescription}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-5xl font-bold text-center text-primary">
+                            {analysisResult?.ndvi.toFixed(3)}
+                        </div>
+                    </CardContent>
+                </Card>
+            </TabsContent>
+        </Tabs>
+         <Card>
+            <CardHeader>
+                <CardTitle>{t('soilAnalysis')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <p className="text-muted-foreground">{analysisResult?.soilAnalysis}</p>
+            </CardContent>
+        </Card>
+        <Card>
+            <CardHeader>
+                <CardTitle>{t('recommendations')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <ul className="space-y-2">
+                    {analysisResult?.recommendations.map((rec, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                            <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 shrink-0" />
+                            <span className="text-foreground/90">{rec}</span>
+                        </li>
+                    ))}
+                </ul>
+            </CardContent>
+        </Card>
+    </div>
+  )
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -116,67 +167,24 @@ export default function SatelliteAnalysisPage() {
           </CardContent>
         </Card>
 
-        <Card className="min-h-[400px]">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 font-headline">
-                    <Map /> {t('analysisResult')}
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                 {isLoading && (
-                    <div className="flex flex-col items-center justify-center h-64">
-                        <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-                        <p className="text-lg text-muted-foreground">{t('fetchingSatellite')}</p>
-                    </div>
-                )}
+        <div className="space-y-6">
+             {isLoading && (
+                <div className="flex flex-col items-center justify-center h-64">
+                    <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+                    <p className="text-lg text-muted-foreground">{t('fetchingSatellite')}</p>
+                </div>
+            )}
 
-                {analysisResult && (
-                    <Tabs defaultValue="image" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="image">{t('satelliteImage')}</TabsTrigger>
-                            <TabsTrigger value="health">{t('vegetationHealth')}</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="image" className="mt-4">
-                            <div className="relative w-full aspect-video rounded-md overflow-hidden border">
-                                <Image 
-                                    src={analysisResult.imageUrl} 
-                                    alt="Satellite view of the farm" 
-                                    layout="fill" 
-                                    objectFit="cover"
-                                    data-ai-hint="satellite farm"
-                                />
-                            </div>
-                        </TabsContent>
-                        <TabsContent value="health" className="mt-4">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>NDVI (Vegetation Index)</CardTitle>
-                                    <CardDescription>
-                                        This value indicates the density and health of green vegetation. Higher is better.
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-5xl font-bold text-center text-primary">
-                                        {analysisResult.ndvi.toFixed(3)}
-                                    </div>
-                                    <p className="text-center text-muted-foreground mt-2">
-                                        {analysisResult.ndvi > 0.6 ? "Excellent" : analysisResult.ndvi > 0.4 ? "Good" : "Moderate"} vegetation health.
-                                    </p>
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
-                    </Tabs>
-                )}
-
-                {!isLoading && !analysisResult && (
-                    <div className="flex flex-col items-center justify-center h-64 text-center">
-                    <Satellite className="h-16 w-16 text-muted-foreground/50 mb-4" />
-                    <p className="text-muted-foreground text-lg">{t('resultsAppearHere')}</p>
-                    <p className="text-muted-foreground/80">{t('enterCoordinatesToStart')}</p>
+            {analysisResult ? renderAnalysis() : (
+                !isLoading && (
+                    <div className="flex flex-col items-center justify-center h-64 text-center bg-card rounded-xl p-4">
+                        <Satellite className="h-16 w-16 text-muted-foreground/50 mb-4" />
+                        <p className="text-muted-foreground text-lg">{t('resultsAppearHere')}</p>
+                        <p className="text-muted-foreground/80">{t('enterCoordinatesToStart')}</p>
                     </div>
-                )}
-            </CardContent>
-        </Card>
+                )
+            )}
+        </div>
       </div>
     </div>
   );

@@ -105,13 +105,15 @@ const translations = {
 
     // Satellite Analysis
     satelliteAnalysisTitle: 'Satellite Field Analysis',
-    satelliteAnalysisDescription: 'Get a satellite view of your farm to analyze crop health (NDVI).',
+    satelliteAnalysisDescription: 'Get an AI-generated satellite view of your farm to analyze crop health.',
     farmCoordinates: 'Farm Coordinates',
     analyzeField: 'Analyze Field',
-    fetchingSatellite: 'Fetching satellite data...',
-    satelliteImage: 'Satellite Image',
+    fetchingSatellite: 'AI is generating your satellite analysis...',
+    satelliteImage: 'AI Satellite View',
     vegetationHealth: 'Vegetation Health',
     enterCoordinatesToStart: 'Enter coordinates to see your field analysis.',
+    soilAnalysis: 'Soil Analysis',
+
 
     // Data Visualization (Old)
     dataVisualizationTitle: 'Historical Data Insights',
@@ -257,13 +259,15 @@ const translations = {
 
     // Satellite Analysis
     satelliteAnalysisTitle: 'सैटेलाइट खेत विश्लेषण',
-    satelliteAnalysisDescription: 'फसल स्वास्थ्य (NDVI) का विश्लेषण करने के लिए अपने खेत का सैटेलाइट दृश्य प्राप्त करें।',
+    satelliteAnalysisDescription: 'फसल स्वास्थ्य का विश्लेषण करने के लिए अपने खेत का AI-जनित सैटेलाइट दृश्य प्राप्त करें।',
     farmCoordinates: 'खेत के निर्देशांक',
     analyzeField: 'खेत का विश्लेषण करें',
-    fetchingSatellite: 'सैटेलाइट डेटा लाया जा रहा है...',
-    satelliteImage: 'सैटेलाइट छवि',
+    fetchingSatellite: 'AI आपका सैटेलाइट विश्लेषण तैयार कर रहा है...',
+    satelliteImage: 'AI सैटेलाइट दृश्य',
     vegetationHealth: 'वनस्पति स्वास्थ्य',
     enterCoordinatesToStart: 'अपना खेत विश्लेषण देखने के लिए निर्देशांक दर्ज करें।',
+    soilAnalysis: 'मिट्टी का विश्लेषण',
+
 
     // Data Visualization (Old)
     dataVisualizationTitle: 'ऐतिहासिक डेटा अंतर्दृष्टि',
@@ -408,13 +412,15 @@ const translations = {
 
     // Satellite Analysis
     satelliteAnalysisTitle: 'செயற்கைக்கோள் புலம் பகுப்பாய்வு',
-    satelliteAnalysisDescription: 'பயிர் ஆரோக்கியத்தை (NDVI) பகுப்பாய்வு செய்ய உங்கள் பண்ணையின் செயற்கைக்கோள் பார்வையைப் பெறுங்கள்.',
+    satelliteAnalysisDescription: 'பயிர் ஆரோக்கியத்தை பகுப்பாய்வு செய்ய உங்கள் பண்ணையின் AI-உருவாக்கிய செயற்கைக்கோள் பார்வையைப் பெறுங்கள்.',
     farmCoordinates: 'பண்ணை ஆயத்தொலைவுகள்',
     analyzeField: 'புலத்தை பகுப்பாய்வு செய்',
-    fetchingSatellite: 'செயற்கைக்கோள் தரவு பெறப்படுகிறது...',
-    satelliteImage: 'செயற்கைக்கோள் படம்',
+    fetchingSatellite: 'AI உங்கள் செயற்கைக்கோள் பகுப்பாய்வை உருவாக்குகிறது...',
+    satelliteImage: 'AI செயற்கைக்கோள் பார்வை',
     vegetationHealth: 'தாவர ஆரோக்கியம்',
     enterCoordinatesToStart: 'உங்கள் புலம் பகுப்பாய்வைக் காண ஆயத்தொலைவுகளை உள்ளிடவும்.',
+    soilAnalysis: 'மண் பகுப்பாய்வு',
+
 
     // Data Visualization (Old)
     dataVisualizationTitle: 'வரலாற்று தரவு நுண்ணறிவு',
