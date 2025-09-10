@@ -30,7 +30,7 @@ export function Header() {
     { href: '/agronomic-tips', label: t('plantDiagnosis'), icon: HeartPulse },
     { href: '/weather', label: t('weather'), icon: Sun },
     { href: '/satellite-analysis', label: t('satelliteAnalysis'), icon: Satellite },
-    { href: '/community', label: 'Community', icon: MessageSquare },
+    { href: '/community', label: t('community'), icon: MessageSquare },
   ];
 
   return (
@@ -110,4 +110,3 @@ export function Header() {
     </header>
   );
 }
-

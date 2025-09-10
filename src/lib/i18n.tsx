@@ -40,6 +40,7 @@ export const translations = {
     settings: 'Settings',
     support: 'Support',
     satelliteAnalysis: 'Satellite Analysis',
+    community: 'Community',
 
     // Dashboard
     welcome: 'Welcome, Farmer!',
@@ -198,6 +199,7 @@ export const translations = {
     settings: 'सेटिंग्स',
     support: 'सहायता',
     satelliteAnalysis: 'सैटेलाइट विश्लेषण',
+    community: 'समुदाय',
 
 
     // Dashboard
@@ -358,6 +360,7 @@ export const translations = {
     settings: 'அமைப்புகள்',
     support: 'ஆதரவு',
     satelliteAnalysis: 'செயற்கைக்கோள் பகுப்பாய்வு',
+    community: 'சமூகம்',
 
     // Dashboard
     welcome: 'விவசாயி, வருக!',
@@ -517,6 +520,7 @@ export const translations = {
     settings: 'ക്രമീകരണങ്ങൾ',
     support: 'പിന്തുണ',
     satelliteAnalysis: 'ഉപഗ്രഹ വിശകലനം',
+    community: 'കമ്മ്യൂണിറ്റി',
 
     // Dashboard
     welcome: 'കർഷകാ, സ്വാഗതം!',
